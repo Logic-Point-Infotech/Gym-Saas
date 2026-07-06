@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Diet Plan - Gym Automation</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        .active-glow {
+            box-shadow: 0 0 20px rgba(167, 57, 47, 0.1);
+        }
+        body {
+            background-color: #C1C8CF;
+            color: #192026;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#a7392f",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#ffdad5",
+                        "on-primary-container": "#410001",
+                        "secondary": "#006874",
+                        "on-secondary": "#ffffff",
+                        "secondary-container": "#a5eeff",
+                        "tertiary": "#4a626d",
+                        "on-tertiary": "#ffffff",
+                        "surface": "#C1C8CF",
+                        "on-surface": "#192026",
+                        "surface-variant": "#f4dedb",
+                        "on-surface-variant": "#534341",
+                        "outline": "#857371",
+                        "surface-container-high": "#e1e2e8",
+                        "surface-container": "#eceef4"
+                    },
+                    borderRadius: {
+                        DEFAULT: "0.25rem",
+                        lg: "0.5rem",
+                        xl: "0.75rem",
+                        full: "9999px"
+                    },
+                    spacing: {
+                        "container-padding-desktop": "40px",
+                        base: "8px",
+                        "stack-md": "16px",
+                        "stack-sm": "8px",
+                        "container-padding-mobile": "20px",
+                        "stack-lg": "32px",
+                        gutter: "16px"
+                    },
+                    fontFamily: {
+                        "label-caps": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Inter"],
+                        "headline-lg": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "display-lg": ["Inter"],
+                        "title-md": ["Inter"]
+                    },
+                    fontSize: {
+                        "label-caps": ["12px", {lineHeight: "16px", letterSpacing: "0.05em", fontWeight: "600"}],
+                        "body-sm": ["14px", {lineHeight: "20px", fontWeight: "400"}],
+                        "headline-lg-mobile": ["24px", {lineHeight: "32px", fontWeight: "700"}],
+                        "headline-lg": ["32px", {lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "700"}],
+                        "body-lg": ["16px", {lineHeight: "24px", fontWeight: "400"}],
+                        "display-lg": ["48px", {lineHeight: "56px", letterSpacing: "-0.02em", fontWeight: "700"}],
+                        "title-md": ["18px", {lineHeight: "24px", fontWeight: "600"}]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+</head>
+<body class="flex flex-col min-h-screen pb-32">
+<!-- TopAppBar -->
+<header class="bg-white/40 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-black/5 flex justify-between items-center w-full px-container-padding-mobile py-base">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer">menu</span>
+<h1 class="text-title-md font-title-md font-bold text-on-surface">Gym Automation</h1>
+</div>
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-black/5">
+<span class="material-symbols-outlined text-on-surface-variant/60 text-[32px]">account_circle</span>
+</div>
+</header>
+<main class="flex-grow px-container-padding-mobile mt-stack-lg max-w-4xl mx-auto w-full">
+<!-- Assigned By Section -->
+<section class="mb-stack-lg">
+<div class="flex items-center justify-between mb-stack-sm">
+<div class="flex flex-col">
+<span class="text-label-caps font-label-caps text-on-surface-variant uppercase tracking-widest">Assigned By</span>
+<span class="text-headline-lg-mobile font-headline-lg-mobile text-on-surface">Uday Patil</span>
+</div>
+<div class="bg-primary/10 px-4 py-2 rounded-xl flex items-center gap-2 border border-primary/20">
+<span class="material-symbols-outlined text-primary" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="text-label-caps font-label-caps text-primary">ELITE TRAINER</span>
+</div>
+</div>
+<div class="h-1 w-24 bg-primary rounded-full"></div>
+</section>
+<!-- Dietary Guidelines (Checkable List) -->
+<section class="mb-stack-lg">
+<h2 class="text-title-md font-title-md text-on-surface mb-stack-md">Daily Guidelines</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-stack-sm">
+<label class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:bg-white/40 transition-all group">
+<input class="w-6 h-6 rounded border-outline bg-white/20 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-lg font-body-lg text-on-surface">3L Water Intake</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Stay hydrated throughout the day</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-secondary">water_drop</span>
+</label>
+<label class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:bg-white/40 transition-all">
+<input class="w-6 h-6 rounded border-outline bg-white/20 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-lg font-body-lg text-on-surface">7hr Quality Sleep</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Crucial for muscle recovery</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-secondary">bedtime</span>
+</label>
+<label class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:bg-white/40 transition-all">
+<input class="w-6 h-6 rounded border-outline bg-white/20 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-lg font-body-lg text-on-surface">Zero Sugar Policy</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">Avoid processed sweeteners</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-secondary">block</span>
+</label>
+<label class="glass-card p-4 rounded-xl flex items-center gap-4 cursor-pointer hover:bg-white/40 transition-all">
+<input class="w-6 h-6 rounded border-outline bg-white/20 text-primary focus:ring-primary" type="checkbox"/>
+<div class="flex flex-col">
+<span class="text-body-lg font-body-lg text-on-surface">Post-meal Walk</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">10 min walk after dinner</span>
+</div>
+<span class="material-symbols-outlined ml-auto text-secondary">directions_walk</span>
+</label>
+</div>
+</section>
+<!-- Meal Breakdown -->
+<section class="space-y-stack-md">
+<h2 class="text-title-md font-title-md text-on-surface">Meal Sections</h2>
+<!-- Breakfast -->
+<div class="glass-card p-gutter rounded-xl border-l-4 border-l-secondary relative overflow-hidden group">
+<div class="flex justify-between items-start mb-stack-sm relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">wb_twilight</span>
+</div>
+<div>
+<h3 class="text-body-lg font-bold text-on-surface">Breakfast</h3>
+<span class="text-label-caps text-on-surface-variant">07:30 AM - 08:30 AM</span>
+</div>
+</div>
+<span class="text-label-caps font-label-caps bg-surface-container-high px-2 py-1 rounded text-on-surface">450 kcal</span>
+</div>
+<ul class="space-y-2 text-body-sm text-on-surface-variant relative z-10"><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Oats with Dry Fruits &amp; Honey</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>2 Moong Dal Chilla</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>1 Cup Masala Tea (No Sugar)</li></ul>
+</div>
+<!-- Lunch -->
+<div class="glass-card p-gutter rounded-xl border-l-4 border-l-tertiary relative overflow-hidden group">
+<div class="flex justify-between items-start mb-stack-sm relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined">light_mode</span>
+</div>
+<div>
+<h3 class="text-body-lg font-bold text-on-surface">Lunch</h3>
+<span class="text-label-caps text-on-surface-variant">01:00 PM - 02:00 PM</span>
+</div>
+</div>
+<span class="text-label-caps font-label-caps bg-surface-container-high px-2 py-1 rounded text-on-surface">650 kcal</span>
+</div>
+<ul class="space-y-2 text-body-sm text-on-surface-variant relative z-10"><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Brown Rice (150g) with Dal Tadka</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Steamed Veggies (Bhindi/Gobi)</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-tertiary"></span>Small bowl of Curd</li></ul>
+</div>
+<!-- Snacks -->
+<div class="glass-card p-gutter rounded-xl border-l-4 border-l-primary relative overflow-hidden group">
+<div class="flex justify-between items-start mb-stack-sm relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined">coffee</span>
+</div>
+<div>
+<h3 class="text-body-lg font-bold text-on-surface">Snacks</h3>
+<span class="text-label-caps text-on-surface-variant">05:00 PM - 05:30 PM</span>
+</div>
+</div>
+<span class="text-label-caps font-label-caps bg-surface-container-high px-2 py-1 rounded text-on-surface">200 kcal</span>
+</div>
+<ul class="space-y-2 text-body-sm text-on-surface-variant relative z-10"><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>Sprouts Salad with Lemon</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-primary"></span>Roasted Makhana (Handful)</li></ul>
+</div>
+<!-- Dinner -->
+<div class="glass-card p-gutter rounded-xl border-l-4 border-l-secondary relative overflow-hidden group">
+<div class="flex justify-between items-start mb-stack-sm relative z-10">
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-lg bg-secondary/10 flex items-center justify-center text-secondary">
+<span class="material-symbols-outlined">nights_stay</span>
+</div>
+<div>
+<h3 class="text-body-lg font-bold text-on-surface">Dinner</h3>
+<span class="text-label-caps text-on-surface-variant">08:00 PM - 09:00 PM</span>
+</div>
+</div>
+<span class="text-label-caps font-label-caps bg-surface-container-high px-2 py-1 rounded text-on-surface">350 kcal</span>
+</div>
+<ul class="space-y-2 text-body-sm text-on-surface-variant relative z-10"><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Paneer Tikka (120g)</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>Mixed Vegetable Soup</li><li class="flex items-center gap-2"><span class="w-1.5 h-1.5 rounded-full bg-secondary"></span>1 Multigrain Roti</li></ul>
+</div>
+</section>
+<!-- Action Buttons -->
+<section class="mt-stack-lg mb-12 flex flex-col sm:flex-row gap-4">
+<button class="flex-1 bg-primary text-on-primary font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 active:scale-95 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined">download</span>
+<span class="text-body-lg">Download Plan</span>
+</button>
+<button class="flex-1 bg-white/60 text-on-surface border border-black/5 font-bold py-4 px-6 rounded-xl flex items-center justify-center gap-2 hover:bg-white/80 active:scale-95 transition-all">
+<span class="material-symbols-outlined">share</span>
+<span class="text-body-lg">Share with Friends</span>
+</button>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center px-4 py-3 pb-safe bg-white/40 backdrop-blur-2xl border-t border-black/5 shadow-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-label-caps font-label-caps">Dashboard</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">restaurant</span>
+<span class="text-label-caps font-label-caps">Nutrition</span>
+</div>
+<!-- Active State: Diet Plan -->
+<div class="flex flex-col items-center justify-center bg-primary/10 text-primary rounded-xl px-3 py-1 scale-90 duration-150 cursor-default">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">event_note</span>
+<span class="text-label-caps font-label-caps">Diet Plan</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">fitness_center</span>
+<span class="text-label-caps font-label-caps">Trainer</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant/60 hover:text-primary transition-all cursor-pointer">
+<span class="material-symbols-outlined">person</span>
+<span class="text-label-caps font-label-caps">Profile</span>
+</div>
+</nav>
+<script>
+        // Micro-interactions for the checkable list
+        document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+            checkbox.addEventListener('change', (e) => {
+                const parent = e.target.closest('.glass-card');
+                if (e.target.checked) {
+                    parent.classList.add('bg-primary/5', 'border-primary/30');
+                    parent.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 1";
+                } else {
+                    parent.classList.remove('bg-primary/5', 'border-primary/30');
+                    parent.querySelector('.material-symbols-outlined').style.fontVariationSettings = "'FILL' 0";
+                }
+            });
+        });
+    </script>
+</body></html>
