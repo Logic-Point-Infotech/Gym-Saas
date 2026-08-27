@@ -1,0 +1,308 @@
+@import "tailwindcss";
+
+:root {
+  --background: #F3F3F7;
+  --foreground: #303030;
+  --card: #FFFFFF;
+  --card-foreground: #0A0A12;
+  --popover: #FFFFFF;
+  --popover-foreground: #0A0A12;
+  --primary: #858500;
+  --primary-foreground: #FFFFFF;
+  --secondary: #ECECF3;
+  --secondary-foreground: #303030;
+  --muted: #ECECF3;
+  --muted-foreground: #6C6C6C;
+  --accent: #B8B8D8;
+  --accent-foreground: #0A0A12;
+  --destructive: #ba1a1a;
+  --destructive-foreground: #ffffff;
+  --success: #6c9a00;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --border: #C0C0C0;
+  --input: #C0C0C0;
+  --ring: #858500;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #0A0A12;
+  --sidebar-accent: #ECECF3;
+
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(192, 192, 192, 0.4);
+  --glass-card-bg1: rgba(255, 255, 255, 0.85);
+  --glass-card-bg2: rgba(243, 243, 247, 0.75);
+  --grid-line: rgba(184, 184, 216, 0.15);
+  --spotlight-color: rgba(184, 184, 216, 0.1);
+  --node-backdrop: rgba(255, 255, 255, 0.9);
+
+  --glass-card-hover-border: rgba(184, 184, 216, 0.5);
+  --glass-card-hover-shadow: rgba(184, 184, 216, 0.1);
+  --stat-card-hover-border: rgba(232, 232, 64, 0.5);
+  --stat-card-hover-shadow: rgba(232, 232, 64, 0.15);
+}
+
+.dark {
+  --background: #0A0A12;
+  --foreground: #C0C0C0;
+  --card: #1A1A1A;
+  --card-foreground: #F0F0F0;
+  --popover: #1A1A1A;
+  --popover-foreground: #F0F0F0;
+  --primary: #E8E840;
+  --primary-foreground: #0A0A12;
+  --secondary: #303030;
+  --secondary-foreground: #F0F0F0;
+  --muted: #303030;
+  --muted-foreground: #909090;
+  --accent: #B8B8D8;
+  --accent-foreground: #0A0A12;
+  --destructive: #ffb4ab;
+  --destructive-foreground: #690005;
+  --success: #E8E840;
+  --success-foreground: #0A0A12;
+  --warning: #f59e0b;
+  --warning-foreground: #0A0A12;
+  --border: #303030;
+  --input: #303030;
+  --ring: #E8E840;
+  --sidebar: #0A0A12;
+  --sidebar-foreground: #F0F0F0;
+  --sidebar-accent: #1A1A1A;
+
+  --glass-bg: rgba(26, 26, 26, 0.7);
+  --glass-border: rgba(48, 48, 48, 0.4);
+  --glass-card-bg1: rgba(26, 26, 26, 0.85);
+  --glass-card-bg2: rgba(10, 10, 18, 0.75);
+  --grid-line: rgba(232, 232, 64, 0.04);
+  --spotlight-color: rgba(232, 232, 64, 0.06);
+  --node-backdrop: rgba(26, 26, 26, 0.9);
+
+  --glass-card-hover-border: rgba(232, 232, 64, 0.35);
+  --glass-card-hover-shadow: rgba(232, 232, 64, 0.15);
+  --stat-card-hover-border: rgba(184, 184, 216, 0.4);
+  --stat-card-hover-shadow: rgba(184, 184, 216, 0.15);
+}
+
+
+@theme {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+
+/* ---- Base styles ---- */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: hsl(263.4 90% 62% / 0.3);
+  color: hsl(210 40% 98%);
+}
+
+/* ---- Scrollbar ---- */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(224 32% 20%);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(263.4 90% 62% / 0.4);
+}
+
+/* ---- Utility classes ---- */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--glass-border);
+}
+
+.glass-card {
+  background: linear-gradient(
+    135deg,
+    var(--glass-card-bg1),
+    var(--glass-card-bg2)
+  );
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: var(--glass-card-hover-border);
+  box-shadow: 0 12px 30px -10px var(--glass-card-hover-shadow);
+  transform: translateY(-2px);
+}
+
+.stat-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.stat-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--stat-card-hover-border);
+  box-shadow: 0 12px 30px -10px var(--stat-card-hover-shadow);
+}
+
+.mesh-grid {
+  background-image: linear-gradient(var(--grid-line) 1px, transparent 1px),
+                    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+
+.gradient-text {
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+
+/* ---- Animations ---- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInLeft {
+  from { opacity: 0; transform: translateX(-16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  from { opacity: 0; transform: translateX(16px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 hsl(217.2 91.2% 59.8% / 0.4); }
+  50%      { box-shadow: 0 0 20px 4px hsl(217.2 91.2% 59.8% / 0.15); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.animate-slide-down {
+  animation: slideDown 0.2s ease-out;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background-size: 200% 100%;
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s infinite;
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* ---- Staggered children animation ---- */
+.stagger-children > * {
+  opacity: 0;
+  animation: fadeIn 0.4s ease-out forwards;
+}
+.stagger-children > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger-children > *:nth-child(2) { animation-delay: 0.1s;  }
+.stagger-children > *:nth-child(3) { animation-delay: 0.15s; }
+.stagger-children > *:nth-child(4) { animation-delay: 0.2s;  }
+.stagger-children > *:nth-child(5) { animation-delay: 0.25s; }
+.stagger-children > *:nth-child(6) { animation-delay: 0.3s;  }
+.stagger-children > *:nth-child(7) { animation-delay: 0.35s; }
+.stagger-children > *:nth-child(8) { animation-delay: 0.4s;  }
+
+/* ---- Vyayam AI animations & shapes ---- */
+.progress-ring-circle {
+  transition: stroke-dashoffset 0.85s ease-in-out;
+  transform: rotate(-90deg);
+  transform-origin: 50% 50%;
+}
+
+.chart-bar {
+  transition: height 1s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-path {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: dash 2s ease-in-out forwards;
+}
+
+@keyframes dash {
+  to {
+    stroke-dashoffset: 0;
+  }
+}

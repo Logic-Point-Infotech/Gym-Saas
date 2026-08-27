@@ -1,0 +1,222 @@
+// ============================================================================
+// GymPulse Admin Portal - Prisma Schema (SQLite compatible)
+// Database: SQLite
+// ============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// MODELS
+// ============================================================================
+
+model User {
+  id             String     @id @default(cuid())
+  memberId       String?    @unique @map("member_id")
+  name           String
+  email          String     @unique
+  passwordHash   String     @map("password_hash")
+  phone          String?
+  gender         String?    // MALE, FEMALE, OTHER
+  dateOfBirth    DateTime?  @map("date_of_birth")
+  address        String?    @db.Text
+  role           String     @default("CLIENT") // ADMIN, TRAINER, CLIENT
+  heightCm       Float?     @map("height_cm")
+  weightKg       Float?     @map("weight_kg")
+  status         String     @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  avatarUrl      String?    @map("avatar_url")
+  specialization String?
+  experience     Int?
+  isDeleted      Boolean    @default(false) @map("is_deleted")
+  deletedAt      DateTime?  @map("deleted_at")
+  createdAt      DateTime   @default(now()) @map("created_at")
+  updatedAt      DateTime   @updatedAt @map("updated_at")
+
+  memberships            Membership[]
+  trainerAllocations     TrainerAllocation[]     @relation("TrainerAllocations")
+  clientAllocations      TrainerAllocation[]     @relation("ClientAllocations")
+  healthMetrics          ClientHealthMetric[]
+  nutritionLogs          DailyNutrition[]
+  sentNotifications      Notification[]          @relation("SentNotifications")
+  receivedNotifications  NotificationRecipient[]
+  attendances            Attendance[]
+  gymHistories           GymHistory[]
+  documents              MemberDocument[]
+
+  @@map("users")
+  @@index([memberId])
+  @@index([role])
+  @@index([status])
+  @@index([isDeleted])
+  @@index([createdAt])
+}
+
+model Membership {
+  id        String           @id @default(cuid())
+  clientId  String           @map("client_id")
+  planName  String           @default("Basic")
+  amount    Float            @default(0)
+  startDate DateTime         @map("start_date")
+  endDate   DateTime         @map("end_date")
+  status    String           @default("ACTIVE") // ACTIVE, EXPIRED, FROZEN
+  notes     String?          @db.Text
+  isDeleted Boolean          @default(false) @map("is_deleted")
+  deletedAt DateTime?        @map("deleted_at")
+  createdAt DateTime         @default(now()) @map("created_at")
+  updatedAt DateTime         @updatedAt @map("updated_at")
+
+  client User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("memberships")
+  @@index([clientId])
+  @@index([status])
+  @@index([endDate])
+  @@index([isDeleted])
+}
+
+model TrainerAllocation {
+  id          String   @id @default(cuid())
+  trainerId   String   @map("trainer_id")
+  clientId    String   @map("client_id")
+  allocatedAt DateTime @default(now()) @map("allocated_at")
+  isActive    Boolean  @default(true) @map("is_active")
+
+  trainer User @relation("TrainerAllocations", fields: [trainerId], references: [id], onDelete: Cascade)
+  client  User @relation("ClientAllocations", fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([trainerId, clientId])
+  @@map("trainer_allocations")
+  @@index([trainerId])
+  @@index([clientId])
+  @@index([isActive])
+}
+
+model ClientHealthMetric {
+  id              String   @id @default(cuid())
+  clientId        String   @map("client_id")
+  bmi             Float?
+  weightKg        Float    @map("weight_kg")
+  bodyFatPercent   Float?   @map("body_fat_percent")
+  bloodReportJson String?  @db.Text @map("blood_report_json")
+  notes           String?  @db.Text
+  recordedAt      DateTime @default(now()) @map("recorded_at")
+
+  client User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_health_metrics")
+  @@index([clientId])
+  @@index([recordedAt])
+}
+
+model DailyNutrition {
+  id           String   @id @default(cuid())
+  clientId     String   @map("client_id")
+  imageUrl     String?  @map("image_url")
+  detectedFood String?  @map("detected_food")
+  calories     Float    @default(0)
+  protein      Float    @default(0)
+  carbs        Float    @default(0)
+  fats         Float    @default(0)
+  mealType     String   @default("LUNCH") @map("meal_type") // BREAKFAST, LUNCH, DINNER, SNACK
+  loggedAt     DateTime @default(now()) @map("logged_at")
+
+  client User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("daily_nutrition")
+  @@index([clientId])
+  @@index([loggedAt])
+  @@index([mealType])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  title     String
+  message   String   @db.Text
+  type      String   @default("GENERAL")
+  sentById  String   @map("sent_by_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  sentBy     User                    @relation("SentNotifications", fields: [sentById], references: [id])
+  recipients NotificationRecipient[]
+
+  @@map("notifications")
+  @@index([sentById])
+  @@index([type])
+  @@index([createdAt])
+}
+
+model NotificationRecipient {
+  id             String    @id @default(cuid())
+  notificationId String    @map("notification_id")
+  userId         String    @map("user_id")
+  readAt         DateTime? @map("read_at")
+
+  notification Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@map("notification_recipients")
+  @@index([userId])
+  @@index([readAt])
+}
+
+model GymSettings {
+  id          String   @id @default(cuid())
+  key         String   @unique
+  value       String
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("gym_settings")
+}
+
+model Attendance {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  checkInAt   DateTime  @default(now()) @map("check_in_at")
+  checkOutAt  DateTime? @map("check_out_at")
+  deviceType  String    @default("QR_SCANNER") @map("device_type")
+  notes       String?   @db.Text
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("attendances")
+  @@index([userId])
+  @@index([checkInAt])
+}
+
+model GymHistory {
+  id             String    @id @default(cuid())
+  clientId       String    @map("client_id")
+  gymName        String    @map("gym_name")
+  startDate      DateTime  @map("start_date")
+  endDate        DateTime? @map("end_date")
+  durationMonths Int?      @map("duration_months")
+  isCurrent      Boolean   @default(false) @map("is_current")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  client User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("gym_history")
+  @@index([clientId])
+}
+
+model MemberDocument {
+  id         String   @id @default(cuid())
+  clientId   String   @map("client_id")
+  title      String
+  fileUrl    String   @map("file_url")
+  fileType   String?  @map("file_type")
+  uploadedAt DateTime @default(now()) @map("uploaded_at")
+
+  client User @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("member_documents")
+  @@index([clientId])
+}
