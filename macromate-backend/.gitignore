@@ -1,0 +1,5 @@
+# macromate-backend/.gitignore
+node_modules/
+.env
+uploads/
+*.log

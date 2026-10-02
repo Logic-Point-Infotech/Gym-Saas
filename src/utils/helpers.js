@@ -1,19 +1,39 @@
 // src/utils/helpers.js
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-export const calculateBMI = (weight, heightCm) => {
-  if (!weight || !heightCm) return 0;
-  const heightM = heightCm / 100;
-  const bmi = weight / (heightM * heightM);
-  return bmi.toFixed(1);
-};
-
-export const getBMICategory = (bmi) => {
-  if (bmi < 18.5) return 'Underweight';
-  if (bmi < 25) return 'Normal';
-  if (bmi < 30) return 'Overweight';
-  return 'Obese';
+export const STORAGE_KEYS = {
+  TOKEN: 'macromate_token',
+  USER: 'macromate_user',
 };
 
 export const formatCurrency = (amount) => {
-  return `₹${amount}`;
+  return `₹${amount.toLocaleString('en-IN')}`;
+};
+
+export const calculateBMI = (weight, heightCm) => {
+  const heightM = heightCm / 100;
+  return (weight / (heightM * heightM)).toFixed(1);
+};
+
+export const getTimeAgo = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const seconds = Math.floor((now - date) / 1000);
+
+  let interval = Math.floor(seconds / 31536000);
+  if (interval > 1) return `${interval}y ago`;
+
+  interval = Math.floor(seconds / 2592000);
+  if (interval > 1) return `${interval}mo ago`;
+
+  interval = Math.floor(seconds / 86400);
+  if (interval >= 1) return `${interval}d ago`;
+
+  interval = Math.floor(seconds / 3600);
+  if (interval >= 1) return `${interval}h ago`;
+
+  interval = Math.floor(seconds / 60);
+  if (interval >= 1) return `${interval}m ago`;
+
+  return 'just now';
 };

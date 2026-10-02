@@ -1,90 +1,59 @@
 // src/components/MealLogItem.js
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, LayoutAnimation } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { useTheme } from '../constants/ThemeContext';
-import { SIZES, SPACING, FONTS } from '../constants/theme';
+import React from 'react';
+import { View, Text, StyleSheet, Image } from 'react-native';
+import theme, { FONTS, SIZES } from '../constants/theme';
 
-const MealLogItem = ({ imageUri, foodNames, timeLogged, totalCalories, verificationStatus, coachComment }) => {
-  const { theme } = useTheme();
-  const [expanded, setExpanded] = useState(false);
-
-  const toggleExpand = () => {
-    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    setExpanded(!expanded);
-  };
-
-  const isVerified = verificationStatus === 'Verified by Coach';
-
+const MealLogItem = ({ meal }) => {
   return (
     <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-      <TouchableOpacity onPress={toggleExpand} style={styles.mainRow}>
-        <Image
-          source={{ uri: imageUri }}
-          style={[styles.thumbnail, { backgroundColor: theme.muted }]}
-          resizeMode="cover"
-        />
-        <View style={styles.infoContainer}>
-          <Text style={[styles.foodNames, { color: theme.heading }]} numberOfLines={1}>{foodNames}</Text>
-          <View style={styles.statusRow}>
-            <Icon
-              name={isVerified ? "check-decagram" : "clock-outline"}
-              size={12}
-              color={isVerified ? theme.success : theme.warning}
-            />
-            <Text style={[styles.statusText, { color: isVerified ? theme.success : theme.warning }]}>
-              {verificationStatus}
-            </Text>
-          </View>
-          <Text style={[styles.time, { color: theme.textSecondary }]}>{timeLogged}</Text>
+      <Image
+        source={{ uri: meal.image_url || 'https://via.placeholder.com/100' }}
+        style={[styles.image, { backgroundColor: theme.background }]}
+      />
+      <View style={styles.content}>
+        <View style={styles.header}>
+          <Text style={[styles.type, { color: theme.primary }]}>{meal.meal_type}</Text>
+          <Text style={[styles.time, { color: theme.textSecondary }]}>
+            {new Date(meal.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+          </Text>
         </View>
-        <View style={styles.calorieContainer}>
-          <Text style={[styles.calories, { color: theme.primary }]}>{totalCalories}</Text>
-          <Text style={[styles.unit, { color: theme.textSecondary }]}>kcal</Text>
+        <Text style={[styles.foods, { color: theme.heading }]} numberOfLines={1}>
+          {JSON.parse(meal.detected_foods).join(', ')}
+        </Text>
+        <View style={styles.macroRow}>
+          <Text style={[styles.macro, { color: theme.textSecondary }]}>P: {meal.total_protein}g  </Text>
+          <Text style={[styles.macro, { color: theme.textSecondary }]}>C: {meal.total_carbs}g  </Text>
+          <Text style={[styles.macro, { color: theme.textSecondary }]}>F: {meal.total_fat}g</Text>
         </View>
-      </TouchableOpacity>
-
-      {expanded && coachComment && (
-        <View style={[styles.expandedContent, { borderTopColor: theme.border }]}>
-          <View style={[styles.commentBox, { backgroundColor: theme.background }]}>
-            <View style={styles.commentHeader}>
-              <Icon name="message-outline" size={14} color={theme.primary} />
-              <Text style={[styles.commentTitle, { color: theme.primary }]}>COACH'S NOTE</Text>
-            </View>
-            <Text style={[styles.commentBody, { color: theme.textPrimary }]}>{coachComment}</Text>
-          </View>
-        </View>
-      )}
+      </View>
+      <View style={styles.calorieBox}>
+        <Text style={[styles.calories, { color: theme.primary }]}>{meal.total_calories}</Text>
+        <Text style={[styles.unit, { color: theme.textSecondary }]}>kcal</Text>
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    borderRadius: SIZES.radius,
-    marginBottom: SPACING.m,
-    borderWidth: 1,
-    overflow: 'hidden',
-  },
-  mainRow: {
     flexDirection: 'row',
+    padding: 12,
+    borderRadius: SIZES.radius,
+    marginBottom: 12,
+    borderWidth: 1,
     alignItems: 'center',
-    padding: 16,
   },
-  thumbnail: { width: 50, height: 50, borderRadius: 10 },
-  infoContainer: { flex: 1, marginLeft: 16, justifyContent: 'center' },
-  foodNames: { ...FONTS.bodyLarge, fontWeight: 'bold' },
-  statusRow: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
-  statusText: { fontSize: 10, fontWeight: '600' },
-  time: { fontSize: 10, marginTop: 2, opacity: 0.8 },
-  calorieContainer: { alignItems: 'flex-end', justifyContent: 'center' },
-  calories: { ...FONTS.title, fontWeight: 'bold' },
-  unit: { fontSize: 10, marginTop: -4 },
-  expandedContent: { padding: 16, paddingTop: 0 },
-  commentBox: { padding: 12, borderRadius: 12 },
-  commentHeader: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 4 },
-  commentTitle: { fontSize: 10, fontWeight: 'bold', letterSpacing: 0.5 },
-  commentBody: { fontSize: 12, lineHeight: 18 },
+  image: { width: 60, height: 60, borderRadius: 10 },
+  content: { flex: 1, marginLeft: 16 },
+  header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  type: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
+  time: { fontSize: 10 },
+  foods: { fontSize: 15, fontWeight: 'bold', marginVertical: 4 },
+  macroRow: { flexDirection: 'row' },
+  macro: { fontSize: 10, fontWeight: '600' },
+  calorieBox: { alignItems: 'flex-end', marginLeft: 8 },
+  calories: { fontSize: 18, fontWeight: 'bold' },
+  unit: { fontSize: 10, marginTop: -2 },
 });
 
 export default MealLogItem;

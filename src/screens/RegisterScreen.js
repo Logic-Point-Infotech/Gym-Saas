@@ -1,5 +1,5 @@
 // src/screens/RegisterScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -7,47 +7,74 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
 } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { useTheme } from '../constants/ThemeContext';
-import { FONTS, SIZES, SPACING } from '../constants/theme';
+import { registerUser } from '../api/authApi';
+import theme, { SIZES, FONTS } from '../constants/theme';
+import { AuthContext } from '../context/AuthContext';
 
 const RegisterScreen = ({ navigation }) => {
-  const { theme } = useTheme();
+  const { login } = useContext(AuthContext);
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState({});
+  const [age, setAge] = useState('');
+  const [gender, setGender] = useState('male');
+  const [height, setHeight] = useState('');
+  const [weight, setWeight] = useState('');
+  const [goal, setGoal] = useState('muscle_gain');
+  const [diet, setDiet] = useState('non_veg');
 
-  const validate = () => {
-    let isValid = true;
-    let errs = {};
-    if (!name) { errs.name = 'Name is required'; isValid = false; }
-    if (!email) { errs.email = 'Email is required'; isValid = false; }
-    if (!password) { errs.password = 'Password is required'; isValid = false; }
-    else if (password.length < 6) { errs.password = 'Min 6 characters'; isValid = false; }
-    setErrors(errs);
-    return isValid;
-  };
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleRegister = async () => {
-    if (!validate()) return;
+    if (!name || !email || !password || !age || !height || !weight) {
+      setError('All fields are required');
+      return;
+    }
+
     setLoading(true);
+    setError('');
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      await AsyncStorage.setItem('userToken', 'mock-jwt-token');
-      navigation.replace('Main');
-    } catch (error) {
-      Alert.alert('Registration Failed');
+      const data = await registerUser({
+        name, email, password,
+        age: parseInt(age),
+        gender,
+        height_cm: parseFloat(height),
+        weight_kg: parseFloat(weight),
+        fitness_goal: goal,
+        dietary_preference: diet
+      });
+      // Navigate to success screen instead of direct login
+      navigation.navigate('RegistrationSuccess', {
+        member_id: data.user.member_id,
+        name: data.user.name,
+        token: data.token,
+        user: data.user
+      });
+    } catch (err) {
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
+
+  const PickerOption = ({ label, value, activeValue, onPress }) => (
+    <TouchableOpacity
+      onPress={() => onPress(value)}
+      style={[
+        styles.pickerBtn,
+        { borderColor: theme.border, backgroundColor: activeValue === value ? theme.primary : theme.surface }
+      ]}
+    >
+      <Text style={{ color: activeValue === value ? theme.onPrimary : theme.textPrimary, fontSize: 12, fontWeight: 'bold' }}>
+        {label}
+      </Text>
+    </TouchableOpacity>
+  );
 
   return (
     <KeyboardAvoidingView
@@ -55,86 +82,64 @@ const RegisterScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content}>
-        <Text style={[styles.header, { color: theme.primary }]}>Create Account</Text>
-        <Text style={[styles.subHeader, { color: theme.textSecondary }]}>Join MacroMate today</Text>
+        <Text style={[styles.header, { color: theme.primary }]}>Join MacroMate</Text>
+        <Text style={[styles.subHeader, { color: theme.textSecondary }]}>Start your transformation</Text>
 
-        <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: theme.textPrimary }]}>Full Name</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                color: theme.textPrimary,
-                borderColor: errors.name ? theme.error : theme.border
-              }
-            ]}
-            placeholder="John Doe"
-            placeholderTextColor={theme.textSecondary}
-            value={name}
-            onChangeText={setName}
-          />
-          {errors.name && <Text style={[styles.errorText, { color: theme.error }]}>{errors.name}</Text>}
+        <View style={styles.form}>
+          <Text style={[styles.label, { color: theme.heading }]}>Full Name</Text>
+          <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={name} onChangeText={setName} />
+
+          <Text style={[styles.label, { color: theme.heading }]}>Email</Text>
+          <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={email} onChangeText={setEmail} autoCapitalize="none" />
+
+          <Text style={[styles.label, { color: theme.heading }]}>Password</Text>
+          <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={password} onChangeText={setPassword} secureTextEntry />
+
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.label, { color: theme.heading }]}>Age</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={age} onChangeText={setAge} keyboardType="numeric" />
+            </View>
+            <View style={{ flex: 1, marginLeft: 16 }}>
+                <Text style={[styles.label, { color: theme.heading }]}>Gender</Text>
+                <View style={styles.pickerRow}>
+                    <PickerOption label="M" value="male" activeValue={gender} onPress={setGender} />
+                    <PickerOption label="F" value="female" activeValue={gender} onPress={setGender} />
+                </View>
+            </View>
+          </View>
+
+          <View style={styles.row}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.label, { color: theme.heading }]}>Height (cm)</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={height} onChangeText={setHeight} keyboardType="numeric" />
+            </View>
+            <View style={{ flex: 1, marginLeft: 16 }}>
+              <Text style={[styles.label, { color: theme.heading }]}>Weight (kg)</Text>
+              <TextInput style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]} value={weight} onChangeText={setWeight} keyboardType="numeric" />
+            </View>
+          </View>
+
+          <Text style={[styles.label, { color: theme.heading }]}>Goal</Text>
+          <View style={styles.pickerRow}>
+            <PickerOption label="Fat Loss" value="fat_loss" activeValue={goal} onPress={setGoal} />
+            <PickerOption label="Muscle Gain" value="muscle_gain" activeValue={goal} onPress={setGoal} />
+            <PickerOption label="Maintain" value="maintenance" activeValue={goal} onPress={setGoal} />
+          </View>
+
+          {error ? <Text style={[styles.errorText, { color: theme.error }]}>{error}</Text> : null}
+
+          <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleRegister} disabled={loading}>
+            {loading ? <ActivityIndicator color={theme.onPrimary} /> : <Text style={[styles.buttonText, { color: theme.onPrimary }]}>Sign Up</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.footerLink}>
+            <Text style={[styles.linkText, { color: theme.textSecondary }]}>
+              Already have an account? <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Login</Text>
+            </Text>
+          </TouchableOpacity>
         </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: theme.textPrimary }]}>Email</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                color: theme.textPrimary,
-                borderColor: errors.email ? theme.error : theme.border
-              }
-            ]}
-            placeholder="example@mail.com"
-            placeholderTextColor={theme.textSecondary}
-            value={email}
-            onChangeText={setEmail}
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
-          {errors.email && <Text style={[styles.errorText, { color: theme.error }]}>{errors.email}</Text>}
-        </View>
-
-        <View style={styles.inputContainer}>
-          <Text style={[styles.label, { color: theme.textPrimary }]}>Password</Text>
-          <TextInput
-            style={[
-              styles.input,
-              {
-                backgroundColor: theme.surface,
-                color: theme.textPrimary,
-                borderColor: errors.password ? theme.error : theme.border
-              }
-            ]}
-            placeholder="Min 6 characters"
-            placeholderTextColor={theme.textSecondary}
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          />
-          {errors.password && <Text style={[styles.errorText, { color: theme.error }]}>{errors.password}</Text>}
-        </View>
-
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.primary }]}
-          onPress={handleRegister}
-          disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={[styles.buttonText, { color: '#fff' }]}>Sign Up</Text>
-          )}
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={() => navigation.navigate('Login')} style={styles.footerLink}>
-          <Text style={[styles.linkText, { color: theme.textSecondary }]}>
-            Already have an account? <Text style={{ color: theme.primary, fontWeight: 'bold' }}>Login</Text>
-          </Text>
-        </TouchableOpacity>
+        <View style={{ height: 40 }} />
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -142,17 +147,20 @@ const RegisterScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: { padding: SIZES.padding, paddingTop: 80 },
-  header: { ...FONTS.h1, fontSize: 32, marginBottom: 4 },
-  subHeader: { ...FONTS.body, marginBottom: 40 },
-  inputContainer: { marginBottom: 20 },
-  label: { ...FONTS.caption, fontWeight: '600', marginBottom: 8, textTransform: 'uppercase' },
-  input: { borderWidth: 1, borderRadius: SIZES.radius, padding: 14, ...FONTS.body },
-  errorText: { ...FONTS.caption, marginTop: 4 },
-  button: { borderRadius: SIZES.radius, height: 56, justifyContent: 'center', alignItems: 'center', marginTop: 20 },
-  buttonText: { ...FONTS.h3 },
-  footerLink: { marginTop: 24, alignItems: 'center' },
-  linkText: { ...FONTS.body }
+  content: { padding: SIZES.padding, paddingTop: 60 },
+  header: { fontSize: 32, fontWeight: 'bold' },
+  subHeader: { fontSize: 15, marginBottom: 32 },
+  form: { gap: 16 },
+  label: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: -10 },
+  input: { height: 50, borderWidth: 1, borderRadius: 12, paddingHorizontal: 16, fontSize: 15 },
+  row: { flexDirection: 'row' },
+  pickerRow: { flexDirection: 'row', gap: 8 },
+  pickerBtn: { flex: 1, height: 40, borderRadius: 10, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
+  errorText: { fontSize: 14, textAlign: 'center' },
+  button: { height: 56, borderRadius: 12, justifyContent: 'center', alignItems: 'center', marginTop: 10 },
+  buttonText: { fontSize: 18, fontWeight: 'bold' },
+  footerLink: { marginTop: 16, alignItems: 'center' },
+  linkText: { fontSize: 14 },
 });
 
 export default RegisterScreen;

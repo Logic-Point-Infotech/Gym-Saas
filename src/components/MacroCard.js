@@ -1,17 +1,14 @@
 // src/components/MacroCard.js
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { useTheme } from '../constants/ThemeContext';
-import { SIZES, FONTS } from '../constants/theme';
+import theme, { SIZES, FONTS } from '../constants/theme';
 
-const MacroCard = ({ label, value, target, progress, color }) => {
-  const { theme } = useTheme();
-
+const MacroCard = ({ label, value, color }) => {
   return (
-    <View style={[styles.container, { backgroundColor: theme.muted }]}>
+    <View style={[styles.container, { backgroundColor: theme.surface, borderColor: theme.border }]}>
       <View style={[styles.indicator, { backgroundColor: color }]} />
       <Text style={[styles.label, { color: theme.textSecondary }]}>{label}</Text>
-      <Text style={[styles.value, { color: theme.textPrimary }]}>{value}</Text>
+      <Text style={[styles.value, { color: theme.heading }]}>{value}</Text>
     </View>
   );
 };
@@ -19,10 +16,11 @@ const MacroCard = ({ label, value, target, progress, color }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
+    padding: 16,
     borderRadius: SIZES.radius,
     marginHorizontal: 4,
     alignItems: 'center',
+    borderWidth: 1,
   },
   indicator: {
     width: 20,
@@ -30,16 +28,8 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     marginBottom: 8,
   },
-  label: {
-    ...FONTS.caption,
-    fontWeight: '600',
-    textTransform: 'uppercase',
-  },
-  value: {
-    ...FONTS.bold,
-    fontSize: 16,
-    marginTop: 2,
-  },
+  label: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
+  value: { fontSize: 16, fontWeight: 'bold', marginTop: 2 },
 });
 
 export default MacroCard;

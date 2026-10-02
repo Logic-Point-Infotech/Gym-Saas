@@ -4,7 +4,71 @@
     <option name="autoReloadType" value="NONE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d0e37e45-f23b-4f7e-94bf-caa96897bdd7" name="Changes" comment="" />
+    <list default="true" id="d0e37e45-f23b-4f7e-94bf-caa96897bdd7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/MERGE_AUDIT.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/.env" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/README.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/config/db.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/attendanceController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/authController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/healthController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/notificationController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/nutritionController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/profileController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/controllers/workoutController.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/db_test.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/index.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/middleware/authMiddleware.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/migrations/addMemberId.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/package.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/attendanceRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/authRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/healthRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/notificationRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/nutritionRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/profileRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/routes/workoutRoutes.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/scripts/backfillMemberIds.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/seed.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/test_server.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/macromate-backend/utils/memberIdGenerator.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/authApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/healthApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/notificationApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/nutritionApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/profileApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/api/workoutApi.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/context/AuthContext.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/screens/MemberHistoryScreen.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/screens/RegistrationSuccessScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/caches/deviceStreaming.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/api/client.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/api/client.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/CalorieRing.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/CalorieRing.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ExerciseItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ExerciseItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MacroCard.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MacroCard.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/MealLogItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/MealLogItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/NotificationItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/NotificationItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/ReportInsightItem.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/ReportInsightItem.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AppNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AppNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/AuthNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/AuthNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/navigation/TabNavigator.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/navigation/TabNavigator.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/BloodReportScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/BloodReportScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/HomeScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/HomeScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/LoginScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/LoginScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/NotificationsScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/NotificationsScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/NutritionScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/NutritionScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/ProfileScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/ProfileScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/RegisterScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/RegisterScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/SplashScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/SplashScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/screens/WorkoutScreen.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/screens/WorkoutScreen.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/utils/helpers.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/utils/helpers.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,13 +78,16 @@
     <option name="formatViaClangd" value="false" />
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/VyayamaiTemp" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 6,
   &quot;fromUser&quot;: false
 }</component>
   <component name="ProjectId" id="3EtkB3wVCrpf5DsQCXaEdJu4ILK" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
@@ -35,7 +102,7 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "merge-restore-features",
     "kotlin-language-version-configured": "true",
     "last_opened_file_path": "C:/Users/VICTUS/Desktop/MacroMate",
     "settings.editor.selected.configurable": "com.android.studio.ml.bot.mainConfigurable"

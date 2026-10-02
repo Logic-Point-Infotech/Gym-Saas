@@ -1,235 +1,213 @@
 // src/screens/ProfileScreen.js
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Modal, TextInput } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../constants/ThemeContext';
-import { FONTS, SIZES, SPACING } from '../constants/theme';
-import { MOCK_USER } from '../utils/mockData';
-import ProgressChart from '../components/ProgressChart';
+import { getProfile, updateProfile } from '../api/profileApi';
+import theme, { SIZES, SPACING, FONTS } from '../constants/theme';
+import { STORAGE_KEYS } from '../utils/helpers';
 
 const ProfileScreen = ({ navigation }) => {
-  const { theme, toggleTheme } = useTheme();
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile' or 'analytics'
+  const { theme } = useTheme();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  // Edit Form State
+  const [editData, setEditData] = useState({
+    weight_kg: '',
+    height_cm: '',
+    activity_level: ''
+  });
+
+  const fetchProfile = async () => {
+    try {
+      const data = await getProfile();
+      setUser(data);
+      setEditData({
+        weight_kg: data.weight_kg ? data.weight_kg.toString() : '',
+        height_cm: data.height_cm ? data.height_cm.toString() : '',
+        activity_level: data.activity_level || ''
+      });
+    } catch (err) {
+      Alert.alert('Error', err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => { fetchProfile(); }, []);
 
   const handleLogout = async () => {
-    Alert.alert('Logout', 'Are you sure?', [
+    Alert.alert('Logout', 'Are you sure you want to exit?', [
       { text: 'Cancel', style: 'cancel' },
-      { text: 'Logout', onPress: async () => { await AsyncStorage.removeItem('userToken'); navigation.replace('Auth'); } }
+      {
+        text: 'Logout',
+        onPress: async () => {
+          await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER]);
+          // Use common reload pattern or navigate
+          navigation.reset({ index: 0, routes: [{ name: 'Auth' }] });
+        }
+      }
     ]);
   };
 
-  const ReportItem = ({ title, date, size }) => (
-    <TouchableOpacity
-      style={[styles.reportItem, { backgroundColor: theme.surface, borderColor: theme.border }]}
-      onPress={() => navigation.navigate('HealthReport', { reportTitle: title })}
-    >
-      <View style={styles.reportMain}>
-        <View style={[styles.pdfIcon, { backgroundColor: theme.error + '1A' }]}>
-          <Icon name="file-pdf-box" size={24} color={theme.error} />
-        </View>
-        <View style={styles.reportInfo}>
-          <Text style={[styles.reportTitle, { color: theme.heading }]}>{title}</Text>
-          <Text style={[styles.reportMeta, { color: theme.textSecondary }]}>Shared on {date} • {size}</Text>
-        </View>
-      </View>
-      <Icon name="chevron-right" size={22} color={theme.textSecondary} />
-    </TouchableOpacity>
-  );
+  const handleUpdate = async () => {
+    try {
+      setLoading(true);
+      await updateProfile(editData);
+      setModalVisible(false);
+      fetchProfile();
+      Alert.alert('Success', 'Profile updated!');
+    } catch (err) {
+      Alert.alert('Failed', err.message);
+      setLoading(false);
+    }
+  };
+
+  if (loading && !user) {
+    return <View style={[styles.center, { backgroundColor: theme.background }]}><ActivityIndicator size="large" color={theme.primary} /></View>;
+  }
+
+  const statusColor = user?.membership_status === 'active' ? theme.success : theme.error;
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={styles.header}>
-        <View style={styles.topRow}>
-          <Icon name="menu" size={24} color={theme.primary} />
-          <Text style={[styles.appTitle, { color: theme.heading }]}>MacroMate</Text>
-          <TouchableOpacity onPress={toggleTheme} style={[styles.avatarSmall, { backgroundColor: theme.surface }]}>
-            <Icon name={theme.mode === 'light' ? "weather-night" : "white-balance-sunny"} size={20} color={theme.textSecondary} />
-          </TouchableOpacity>
+    <ScrollView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={[styles.header, { backgroundColor: theme.surface }]}>
+        <View style={styles.memberIdRow}>
+           <Icon name="fingerprint" size={16} color={theme.textSecondary} />
+           <Text style={[styles.memberIdLabel, { color: theme.textSecondary }]}> MEMBER ID </Text>
+           <Text style={[styles.memberIdVal, { color: '#E8E840' }]}>{user?.member_id}</Text>
+        </View>
+
+        <View style={[styles.avatarBox, { borderColor: theme.primary }]}>
+          <Icon name="account" size={60} color={theme.primary} />
+        </View>
+        <Text style={[styles.name, { color: theme.heading }]}>{user?.name}</Text>
+        <Text style={[styles.email, { color: theme.textSecondary }]}>{user?.email}</Text>
+        <View style={[styles.badge, { backgroundColor: statusColor + '22', borderColor: statusColor }]}>
+            <Text style={[styles.badgeText, { color: statusColor }]}>{user?.membership_status?.toUpperCase() || 'NO PLAN'}</Text>
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Toggle Switch */}
-        <View style={[styles.tabToggle, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-            <TouchableOpacity
-                style={[styles.tabBtn, activeTab === 'profile' && { backgroundColor: theme.primary }]}
-                onPress={() => setActiveTab('profile')}
-            >
-                <Text style={[styles.tabBtnText, { color: activeTab === 'profile' ? theme.onPrimary : theme.textSecondary }]}>Profile</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.tabBtn, activeTab === 'analytics' && { backgroundColor: theme.primary }]}
-                onPress={() => setActiveTab('analytics')}
-            >
-                <Text style={[styles.tabBtnText, { color: activeTab === 'analytics' ? theme.onPrimary : theme.textSecondary }]}>Analytics</Text>
-            </TouchableOpacity>
-        </View>
-
-        {activeTab === 'profile' ? (
-          <>
-            {/* Profile Hero */}
-            <View style={styles.hero}>
-              <View style={[styles.profileImageContainer, { borderColor: theme.primary, backgroundColor: theme.surface }]}>
-                <Icon name="account" size={80} color={theme.textSecondary} />
-                <TouchableOpacity style={[styles.editBtn, { backgroundColor: theme.primary, borderColor: theme.background }]}>
-                  <Icon name="pencil" size={14} color={theme.onPrimary} />
-                </TouchableOpacity>
-              </View>
-              <Text style={[styles.userName, { color: theme.heading }]}>{MOCK_USER.name}</Text>
-              <View style={[styles.goalBadge, { backgroundColor: theme.primary + '1A' }]}>
-                <Icon name="dumbbell" size={14} color={theme.primary} />
-                <Text style={[styles.goalText, { color: theme.primary }]}>{MOCK_USER.goal}</Text>
-              </View>
-            </View>
-
-            {/* Stats Bento */}
-            <View style={styles.statsGrid}>
-              <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>AGE</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>{MOCK_USER.age}</Text>
-              </View>
-              <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>HEIGHT</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>{MOCK_USER.height}</Text>
-              </View>
-              <View style={[styles.statBox, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <Text style={[styles.statLabel, { color: theme.textSecondary }]}>WEIGHT</Text>
-                <Text style={[styles.statValue, { color: theme.primary }]}>{MOCK_USER.weight}</Text>
-              </View>
-            </View>
-
-            {/* Membership Card */}
-            <View style={[styles.membershipCard, { backgroundColor: theme.surface, borderColor: theme.primary }]}>
-              <Icon name="shield-check" size={100} color={theme.primary + '1A'} style={styles.membershipBgIcon} />
-              <View style={styles.membershipHeader}>
-                <Text style={[styles.membershipType, { color: theme.primary }]}>PLATINUM MEMBER</Text>
-                <Icon name="contactless-payment" size={24} color={theme.primary} />
-              </View>
-              <View style={{ marginTop: 24 }}>
-                <Text style={[styles.membershipLabel, { color: theme.textSecondary }]}>MEMBER NAME</Text>
-                <Text style={[styles.membershipName, { color: theme.heading }]}>{MOCK_USER.name.toUpperCase()}</Text>
-              </View>
-              <View style={styles.membershipFooter}>
-                <View>
-                  <Text style={[styles.membershipLabel, { color: theme.textSecondary }]}>STATUS</Text>
-                  <Text style={[styles.membershipValue, { color: theme.heading }]}>ACTIVE UNTIL DEC 2026</Text>
-                </View>
-                <View style={[styles.activeStatus, { borderColor: theme.primary }]}>
-                  <Text style={[styles.statusText, { color: theme.primary }]}>PRO</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Health Reports Section */}
-            <View style={styles.reportsSection}>
-              <View style={styles.sectionHeader}>
-                <Text style={[styles.sectionTitle, { color: theme.heading }]}>Health Reports</Text>
-                <TouchableOpacity
-                  style={[styles.addReportBtn, { backgroundColor: theme.primary + '1A' }]}
-                  onPress={() => navigation.navigate('HealthReport')}
-                >
-                  <Icon name="plus-circle" size={18} color={theme.primary} />
-                  <Text style={[styles.addReportText, { color: theme.primary }]}>New Report</Text>
-                </TouchableOpacity>
-              </View>
-
-              <View style={styles.reportList}>
-                <ReportItem title="Annual Checkup 2024.pdf" date="12 Oct 2024" size="2.4 MB" />
-              </View>
-            </View>
-          </>
-        ) : (
-          <View style={styles.analyticsSection}>
-            <Text style={[styles.sectionTitle, { color: theme.heading }]}>Weight Progress</Text>
-            <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Historical data from your logged weigh-ins.</Text>
-            <ProgressChart />
-
-            <View style={[styles.summaryStats, { backgroundColor: theme.surface, borderColor: theme.border }]}>
-                <View style={styles.summaryItem}>
-                    <Text style={[styles.summaryVal, { color: theme.primary }]}>-7.0 kg</Text>
-                    <Text style={[styles.summaryLbl, { color: theme.textSecondary }]}>TOTAL LOST</Text>
-                </View>
-                <View style={[styles.vDivider, { backgroundColor: theme.border }]} />
-                <View style={styles.summaryItem}>
-                    <Text style={[styles.summaryVal, { color: theme.success }]}>-0.4 kg</Text>
-                    <Text style={[styles.summaryLbl, { color: theme.textSecondary }]}>THIS WEEK</Text>
-                </View>
-            </View>
+      <View style={styles.content}>
+        <View style={styles.grid}>
+          <View style={[styles.gridItem, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.gridLabel, { color: theme.textSecondary }]}>BMI</Text>
+            <Text style={[styles.gridVal, { color: theme.heading }]}>{user?.bmi}</Text>
           </View>
-        )}
-
-        {/* Action Buttons */}
-        <View style={styles.actionGrid}>
-          <TouchableOpacity style={[styles.settingsBtn, { backgroundColor: theme.surface, borderColor: theme.border, borderWidth: 1 }]}>
-            <Icon name="cog" size={20} color={theme.heading} />
-            <Text style={[styles.settingsBtnText, { color: theme.heading }]}>Account Settings</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={[styles.logoutBtn, { borderColor: theme.error }]} onPress={handleLogout}>
-            <Icon name="logout" size={20} color={theme.error} />
-            <Text style={[styles.logoutBtnText, { color: theme.error }]}>Logout</Text>
-          </TouchableOpacity>
+          <View style={[styles.gridItem, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.gridLabel, { color: theme.textSecondary }]}>WEIGHT</Text>
+            <Text style={[styles.gridVal, { color: theme.heading }]}>{user?.weight_kg}kg</Text>
+          </View>
+          <View style={[styles.gridItem, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <Text style={[styles.gridLabel, { color: theme.textSecondary }]}>HEIGHT</Text>
+            <Text style={[styles.gridVal, { color: theme.heading }]}>{user?.height_cm}cm</Text>
+          </View>
         </View>
 
-        <View style={{ height: 120 }} />
-      </ScrollView>
-    </View>
+        <View style={[styles.infoList, { backgroundColor: theme.surface, borderColor: theme.border }]}>
+            <View style={styles.infoRow}>
+                <Icon name="bullseye-arrow" size={20} color={theme.primary} />
+                <Text style={[styles.infoText, { color: theme.textPrimary }]}>Goal: {user?.fitness_goal?.replace('_', ' ')}</Text>
+            </View>
+            <View style={styles.infoRow}>
+                <Icon name="leaf" size={20} color={theme.primary} />
+                <Text style={[styles.infoText, { color: theme.textPrimary }]}>Diet: {user?.dietary_preference?.replace('_', ' ')}</Text>
+            </View>
+            <View style={styles.infoRow}>
+                <Icon name="fire" size={20} color={theme.primary} />
+                <Text style={[styles.infoText, { color: theme.textPrimary }]}>Target: {user?.daily_calorie_target} kcal/day</Text>
+            </View>
+        </View>
+
+        <TouchableOpacity style={[styles.editBtn, { backgroundColor: theme.primary }]} onPress={() => setModalVisible(true)}>
+            <Text style={[styles.editBtnText, { color: theme.onPrimary }]}>Edit Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.historyBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('MemberHistory')}>
+            <Icon name="history" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.historyBtnText, { color: theme.textPrimary }]}>Member History</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.logoutBtn, { borderColor: theme.error }]} onPress={handleLogout}>
+            <Text style={[styles.logoutText, { color: theme.error }]}>Logout Account</Text>
+        </TouchableOpacity>
+      </View>
+
+      <Modal visible={modalVisible} transparent animationType="slide">
+        <View style={styles.modalBg}>
+            <View style={[styles.modalContent, { backgroundColor: theme.surface }]}>
+                <Text style={[styles.modalTitle, { color: theme.heading }]}>Update Metrics</Text>
+
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Weight (kg)</Text>
+                <TextInput
+                    style={[styles.input, { borderColor: theme.border, color: theme.textPrimary }]}
+                    value={editData.weight_kg}
+                    onChangeText={(v) => setEditData({...editData, weight_kg: v})}
+                    keyboardType="numeric"
+                />
+
+                <Text style={[styles.inputLabel, { color: theme.textSecondary }]}>Height (cm)</Text>
+                <TextInput
+                    style={[styles.input, { borderColor: theme.border, color: theme.textPrimary }]}
+                    value={editData.height_cm}
+                    onChangeText={(v) => setEditData({...editData, height_cm: v})}
+                    keyboardType="numeric"
+                />
+
+                <View style={styles.modalActions}>
+                    <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.cancelBtn}>
+                        <Text style={{ color: theme.textSecondary }}>Cancel</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={handleUpdate} style={[styles.saveBtn, { backgroundColor: theme.primary }]}>
+                        <Text style={{ color: theme.onPrimary, fontWeight: 'bold' }}>Save Changes</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </View>
+      </Modal>
+
+      <View style={{ height: 40 }} />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  header: { paddingHorizontal: SIZES.padding, paddingTop: 60, paddingBottom: 10 },
-  topRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
-  appTitle: { ...FONTS.title, fontWeight: 'bold', flex: 1, marginLeft: 15 },
-  avatarSmall: { width: 36, height: 36, borderRadius: 18, justifyContent: 'center', alignItems: 'center' },
-  scrollContent: { padding: SIZES.padding },
-  tabToggle: { flexDirection: 'row', padding: 4, borderRadius: 12, borderWidth: 1, marginBottom: 24 },
-  tabBtn: { flex: 1, paddingVertical: 10, borderRadius: 10, alignItems: 'center' },
-  tabBtnText: { fontSize: 13, fontWeight: 'bold' },
-  hero: { alignItems: 'center', marginVertical: 10 },
-  profileImageContainer: { width: 100, height: 100, borderRadius: 50, borderWidth: 2, justifyContent: 'center', alignItems: 'center', position: 'relative' },
-  editBtn: { position: 'absolute', bottom: 0, right: 0, padding: 6, borderRadius: 15, borderWidth: 2 },
-  userName: { ...FONTS.headlineMobile, marginTop: 12 },
-  goalBadge: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 20, marginTop: 8 },
-  goalText: { fontSize: 10, fontWeight: 'bold', textTransform: 'uppercase' },
-  statsGrid: { flexDirection: 'row', gap: 12, marginBottom: 32, marginTop: 20 },
-  statBox: { flex: 1, padding: 16, borderRadius: SIZES.radius, alignItems: 'center', borderWidth: 1 },
-  statLabel: { fontSize: 10, fontWeight: 'bold' },
-  statValue: { ...FONTS.title, fontWeight: 'bold', marginTop: 4 },
-  membershipCard: { padding: 24, borderRadius: 20, position: 'relative', overflow: 'hidden', borderWidth: 1 },
-  membershipBgIcon: { position: 'absolute', top: -10, right: -10 },
-  membershipHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  membershipType: { fontSize: 10, fontWeight: 'bold', letterSpacing: 2 },
-  membershipLabel: { fontSize: 9, fontWeight: 'bold', textTransform: 'uppercase' },
-  membershipName: { fontWeight: 'bold', marginTop: 4, fontSize: 18 },
-  membershipFooter: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', marginTop: 20 },
-  membershipValue: { fontWeight: 'bold', fontSize: 13, marginTop: 4 },
-  activeStatus: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8, borderWidth: 1 },
-  statusText: { fontSize: 10, fontWeight: 'bold' },
-  reportsSection: { marginTop: 32 },
-  sectionHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
-  sectionTitle: { ...FONTS.title, fontWeight: 'bold' },
-  addReportBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8 },
-  addReportText: { fontSize: 12, fontWeight: 'bold' },
-  reportList: { gap: 12 },
-  reportItem: { padding: 16, borderRadius: 16, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderWidth: 1 },
-  reportMain: { flexDirection: 'row', alignItems: 'center', gap: 12 },
-  pdfIcon: { width: 40, height: 40, borderRadius: 8, justifyContent: 'center', alignItems: 'center' },
-  reportTitle: { fontSize: 14, fontWeight: 'bold' },
-  reportMeta: { fontSize: 10, marginTop: 2 },
-  analyticsSection: { marginTop: 10 },
-  subtitle: { ...FONTS.bodySmall, marginBottom: 20 },
-  summaryStats: { flexDirection: 'row', marginTop: 20, padding: 20, borderRadius: 16, borderWidth: 1 },
-  summaryItem: { flex: 1, alignItems: 'center' },
-  summaryVal: { fontSize: 20, fontWeight: 'bold' },
-  summaryLbl: { fontSize: 9, fontWeight: 'bold', marginTop: 4 },
-  vDivider: { width: 1, height: '80%', alignSelf: 'center' },
-  actionGrid: { gap: 12, marginTop: 32 },
-  settingsBtn: { height: 56, borderRadius: 16, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 },
-  settingsBtnText: { fontWeight: 'bold', fontSize: 16 },
-  logoutBtn: { height: 56, borderRadius: 16, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 8 },
-  logoutBtnText: { fontWeight: 'bold', fontSize: 16 },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  header: { alignItems: 'center', padding: 40, paddingTop: 60, borderBottomLeftRadius: 32, borderBottomRightRadius: 32 },
+  memberIdRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  memberIdLabel: { fontSize: 10, fontWeight: 'bold' },
+  memberIdVal: { fontSize: 14, fontWeight: 'bold' },
+  avatarBox: { width: 100, height: 100, borderRadius: 50, borderWidth: 2, justifyContent: 'center', alignItems: 'center', marginBottom: 16 },
+  name: { fontSize: 24, fontWeight: 'bold' },
+  email: { fontSize: 14, marginTop: 4 },
+  badge: { marginTop: 16, paddingHorizontal: 12, paddingVertical: 6, borderRadius: 8, borderWidth: 1 },
+  badgeText: { fontSize: 10, fontWeight: 'bold' },
+  content: { padding: 20 },
+  grid: { flexDirection: 'row', gap: 12, marginBottom: 24 },
+  gridItem: { flex: 1, padding: 16, borderRadius: 16, borderWidth: 1, alignItems: 'center' },
+  gridLabel: { fontSize: 10, fontWeight: 'bold' },
+  gridVal: { fontSize: 18, fontWeight: 'bold', marginTop: 4 },
+  infoList: { padding: 20, borderRadius: 20, borderWidth: 1, gap: 16 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  infoText: { fontSize: 14, fontWeight: '500' },
+  editBtn: { marginTop: 32, height: 56, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  editBtnText: { fontSize: 16, fontWeight: 'bold' },
+  historyBtn: { marginTop: 16, height: 56, borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  historyBtnText: { fontSize: 16, fontWeight: 'bold' },
+  logoutBtn: { marginTop: 16, height: 56, borderRadius: 12, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
+  logoutText: { fontSize: 16, fontWeight: 'bold' },
+  modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
+  modalContent: { padding: 24, borderRadius: 24 },
+  modalTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  inputLabel: { fontSize: 12, fontWeight: 'bold', marginBottom: 8 },
+  input: { height: 50, borderWidth: 1, borderRadius: 10, paddingHorizontal: 16, marginBottom: 16 },
+  modalActions: { flexDirection: 'row', justifyContent: 'flex-end', gap: 16, marginTop: 20 },
+  cancelBtn: { padding: 12 },
+  saveBtn: { paddingHorizontal: 20, paddingVertical: 12, borderRadius: 10 }
 });
 
 export default ProfileScreen;
