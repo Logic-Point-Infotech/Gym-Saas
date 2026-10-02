@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>Login | VYAYAM AI Portal Access</title>
+  <meta name="description" content="Securely log in to the VYAYAM AI platform. Access client metrics, trainer recommendations, or admin operations center dashboards based on your account credentials.">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+  
+  <style>
+    /* Custom style overrides for single-column auth container */
+    .login-container {
+      display: flex;
+      width: 100%;
+      max-width: 480px; /* Constrain width for a centered form */
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+      z-index: 10;
+      animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    .login-main {
+      flex: 1;
+      padding: 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+    
+    /* Dashboard Layout Grid overrides */
+    .sim-panel {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .sim-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .sim-card {
+      background-color: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    
+    .sim-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sim-card-title {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    
+    .sim-card-val {
+      font-size: 2rem;
+      font-family: var(--font-display);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+    
+    .sim-card-trend {
+      font-size: 0.8rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    
+    .sim-card-trend.up {
+      color: #10B981;
+    }
+    
+    .sim-card-trend.down {
+      color: #EF4444;
+    }
+    
+    .sim-card-icon-box {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-full);
+      border: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--accent-primary);
+    }
+    
+    /* Operations Panel & Table styling */
+    .sim-table-section {
+      display: grid;
+      grid-template-columns: 1.8fr 1.2fr;
+      gap: 24px;
+      margin-top: 24px;
+    }
+    
+    .sim-table-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius-lg);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    
+    .sim-table-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    
+    .sim-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+    
+    .sim-table th {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sim-table td {
+      font-size: 0.9rem;
+      padding: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+    
+    .sim-table tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: var(--radius-full);
+    }
+    
+    .status-badge.active {
+      background-color: rgba(16, 185, 129, 0.1);
+      color: #10B981;
+    }
+    
+    .status-badge.pending {
+      background-color: rgba(245, 158, 11, 0.1);
+      color: #F59E0B;
+    }
+    
+    /* Navigation Simulation */
+    .sim-nav {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .sim-nav-link {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      padding-bottom: 16px;
+      position: relative;
+    }
+    
+    .sim-nav-link.active {
+      color: var(--text-primary);
+    }
+    
+    .sim-nav-link.active::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background-color: var(--accent-primary);
+    }
+
+    @media (max-width: 900px) {
+      .sim-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .sim-table-section {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .sim-grid {
+        grid-template-columns: 1fr;
+      }
+      .login-main {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body class="auth-body">
+
+  <!-- Header / Navigation Bar (Fixed for Auth Page) -->
+  <header class="header">
+    <div class="container nav-container">
+      <a href="index.html" class="logo-link">
+        <img src="assets/logo.png" alt="VYAYAM AI Logo" class="logo-img">
+        <span class="logo-text">VYAYAM AI</span>
+      </a>
+      
+      <div class="nav-actions">
+        <!-- Theme Toggle Switch -->
+        <button class="theme-toggle" id="auth-theme-toggle" aria-label="Toggle light and dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+        
+        <a href="index.html" class="btn btn-secondary">Back to Site</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Experience Screen -->
+  <main class="auth-page" id="auth-view">
+    <div class="login-container">
+      
+      <!-- Center card: Login Form -->
+      <section class="login-main">
+        <div class="auth-header" style="text-align: left; align-items: flex-start;">
+          <h1 class="auth-title">Sign In</h1>
+          <p class="auth-subtitle">Access your gym dashboard and AI features portal</p>
+        </div>
+        
+        <!-- Google Branding Compliant Button -->
+        <button class="google-btn" id="google-login-btn">
+          <!-- Google 'G' official SVG icon -->
+          <svg class="google-icon" viewBox="0 0 24 24">
+            <path fill="#EA4335" d="M12 5.04c1.67 0 3.2.58 4.38 1.69l3.27-3.27C17.67 1.54 15 0 12 0 7.37 0 3.42 2.67 1.47 6.56l3.87 3a7.18 7.18 0 0 1 6.66-4.52z"></path>
+            <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.34H12v4.51h6.46a5.54 5.54 0 0 1-2.4 3.63l3.72 2.89c2.18-2 3.71-4.97 3.71-8.69z"></path>
+            <path fill="#FBBC05" d="M5.34 14.84A7.2 7.2 0 0 1 4.9 12c0-.99.17-1.95.48-2.84l-3.87-3A11.96 11.96 0 0 0 0 12c0 2.21.6 4.28 1.63 6.07l3.71-3.23z"></path>
+            <path fill="#34A853" d="M12 24c3.24 0 5.97-1.07 7.96-2.91l-3.72-2.89a7.22 7.22 0 0 1-10.9-3.86l-3.77 2.92A11.95 11.95 0 0 0 12 24z"></path>
+          </svg>
+          Continue with Google
+        </button>
+        
+        <div class="auth-divider">or sign in with email</div>
+        
+        <form class="auth-form" id="login-form">
+          <div class="form-group">
+            <label for="login-email" class="form-label">Email Address</label>
+            <input type="email" id="login-email" class="form-input" placeholder="e.g. name@vyayam.ai" required>
+          </div>
+          
+          <div class="form-group">
+            <div class="auth-options" style="margin-bottom: -4px;">
+              <label for="login-password" class="form-label">Password</label>
+              <a href="#" class="forgot-password" id="forgot-password-link">Forgot Password?</a>
+            </div>
+            <div class="password-wrapper">
+              <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+              <button type="button" class="password-toggle" id="password-toggle-btn" aria-label="Toggle password visibility">
+                <!-- Eye Icon -->
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="eye-icon">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                  <circle cx="12" cy="12" r="3"></circle>
+                </svg>
+              </button>
+            </div>
+          </div>
+          
+          <div class="auth-options">
+            <label class="remember-me">
+              <input type="checkbox" id="remember-me-checkbox">
+              Remember Me
+            </label>
+          </div>
+          
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Sign In</button>
+        </form>
+        
+        <div class="auth-footer">
+          Don't have access? <a href="#" class="auth-link" id="create-account-link">Request Account Creation</a>
+        </div>
+      </section>
+      
+    </div>
+  </main>
+
+  <!-- Role-Based Dashboard Simulator Panels -->
+  <!-- 1. ADMIN DASHBOARD SIMULATOR -->
+  <main class="dashboard-sim" id="dashboard-admin">
+    <div class="dashboard-sim-container">
+      
+      <!-- Top header bar mimicking image_1 / image_2 -->
+      <header class="dashboard-sim-header">
+        <div class="dashboard-sim-profile">
+          <div class="avatar" style="background-color: var(--accent-primary); color: var(--btn-text);">A</div>
+          <div class="sim-user-details">
+            <h2 class="logo-text" style="font-size: 1.4rem;">Vyayam Ai</h2>
+            <span class="sim-role-badge">Executive Portal</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <a href="#" class="btn btn-secondary" onclick="logOutSim()">Sign Out</a>
+        </div>
+      </header>
+      
+      <!-- Portal Sub navigation tabs -->
+      <ul class="sim-nav">
+        <li><a href="#" class="sim-nav-link active">Dashboard</a></li>
+        <li><a href="#" class="sim-nav-link">Members</a></li>
+        <li><a href="#" class="sim-nav-link">Memberships</a></li>
+        <li><a href="#" class="sim-nav-link">Trainers</a></li>
+        <li><a href="#" class="sim-nav-link">Allocations</a></li>
+        <li><a href="#" class="sim-nav-link">Tracking</a></li>
+        <li><a href="#" class="sim-nav-link">Reports</a></li>
+        <li><a href="#" class="sim-nav-link">Settings</a></li>
+      </ul>
+      
+      <!-- Operations Center Panel -->
+      <section class="sim-panel">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;">
+          <div>
+            <h1 style="font-size: 1.8rem; font-family: var(--font-display);">Vyayam AI Operations Center ✨</h1>
+            <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 4px;">Coaching allocations, membership contracts, system analytics, and AI recommendations synchronizing live.</p>
+          </div>
+        </div>
+        
+        <!-- Dashboard Metric cards matched exactly to screenshots -->
+        <div class="sim-grid">
+          <!-- Card 1 -->
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Total Members</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">1,240</span>
+            <span class="sim-card-trend up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              +4% vs last mo.
+            </span>
+          </div>
+          
+          <!-- Card 2 -->
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Active Memberships</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" x2="23" y1="10" y2="10"></line></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">1,150</span>
+            <span class="sim-card-trend up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              92.7% retention rate
+            </span>
+          </div>
+          
+          <!-- Card 3 -->
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Revenue</span>
+              <div class="sim-card-icon-box">
+                <span style="font-weight: 800; font-size: 1.1rem;">₹</span>
+              </div>
+            </div>
+            <span class="sim-card-val">₹42.5k</span>
+            <span class="sim-card-trend up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              +8% from targets
+            </span>
+          </div>
+          
+          <!-- Card 4 -->
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Monthly Growth</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline><polyline points="16 7 22 7 22 13"></polyline></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">+12%</span>
+            <span class="sim-card-trend up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              +148 new signups
+            </span>
+          </div>
+        </div>
+        
+        <!-- Table view mimicking dashboard panels -->
+        <div class="sim-table-section">
+          <!-- Active list -->
+          <div class="sim-table-card">
+            <div class="sim-table-title">
+              <span>Recent Registrations</span>
+              <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-sm);">+ Add Member</button>
+            </div>
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th>Member</th>
+                  <th>Plan Tier</th>
+                  <th>Assigned Trainer</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Aarya Sharma</strong></td>
+                  <td>Premium Annual</td>
+                  <td>Vikram Rathore</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Devika Sen</strong></td>
+                  <td>Monthly Core</td>
+                  <td>Priya Nair</td>
+                  <td><span class="status-badge active">Active</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Kabir Mehta</strong></td>
+                  <td>Quarterly Fit</td>
+                  <td>Unassigned</td>
+                  <td><span class="status-badge pending">Pending</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Quick Operations panel -->
+          <div class="sim-table-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Quick Actions</h3>
+            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; width: 100%;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" x2="16" y1="2" y2="6"></line><line x1="8" x2="8" y1="2" y2="6"></line><line x1="3" x2="21" y1="10" y2="10"></line></svg>
+              Schedule Trainer Allocation
+            </button>
+            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; width: 100%;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" x2="8" y1="13" y2="13"></line><line x1="16" x2="8" y1="17" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+              Generate Revenue Projections
+            </button>
+            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; width: 100%;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 8px;"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>
+              View System Logs
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 2. TRAINER DASHBOARD SIMULATOR -->
+  <main class="dashboard-sim" id="dashboard-trainer">
+    <div class="dashboard-sim-container">
+      
+      <!-- Top header bar -->
+      <header class="dashboard-sim-header">
+        <div class="dashboard-sim-profile">
+          <div class="avatar" style="background-color: var(--accent-primary); color: var(--btn-text);">T</div>
+          <div class="sim-user-details">
+            <h2 class="logo-text" style="font-size: 1.4rem;">Vyayam Trainer</h2>
+            <span class="sim-role-badge">Coaching Portal</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <a href="#" class="btn btn-secondary" onclick="logOutSim()">Sign Out</a>
+        </div>
+      </header>
+      
+      <!-- Sub navigation -->
+      <ul class="sim-nav">
+        <li><a href="#" class="sim-nav-link active">My Clients</a></li>
+        <li><a href="#" class="sim-nav-link">Schedules</a></li>
+        <li><a href="#" class="sim-nav-link">Nutrition Plans</a></li>
+        <li><a href="#" class="sim-nav-link">Feedback Loops</a></li>
+        <li><a href="#" class="sim-nav-link">Settings</a></li>
+      </ul>
+      
+      <!-- Operations Center Panel -->
+      <section class="sim-panel">
+        <div>
+          <h1 style="font-size: 1.8rem; font-family: var(--font-display);">Trainer Workout & Diet Lab 🏋️</h1>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 4px;">Monitor assigned client routines, log dietary adjustments, and check goal milestones.</p>
+        </div>
+        
+        <!-- Metrics -->
+        <div class="sim-grid">
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Assigned Clients</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">36 Members</span>
+            <span class="sim-card-trend up">4 active right now</span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Active Workouts</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="m6.5 6.5 11 11"></path></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">14 Plans</span>
+            <span class="sim-card-trend up">6 modified this week</span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Client Progress Avg</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">94%</span>
+            <span class="sim-card-trend up">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline><polyline points="17 6 23 6 23 12"></polyline></svg>
+              +2.3% this month
+            </span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Weekly Schedule</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">28 Sessions</span>
+            <span class="sim-card-trend up">12 slots remaining</span>
+          </div>
+        </div>
+        
+        <div class="sim-table-section">
+          <!-- Member Log -->
+          <div class="sim-table-card">
+            <div class="sim-table-title">
+              <span>My Active Client Roster</span>
+            </div>
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th>Client</th>
+                  <th>Last Workout</th>
+                  <th>Nutrition Target</th>
+                  <th>Actions Needed</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Devika Sen</strong></td>
+                  <td>Leg Day A (Yesterday)</td>
+                  <td>1,800 kcal (High Protein)</td>
+                  <td><span class="status-badge active" style="background-color: rgba(59, 130, 246, 0.1); color: #3B82F6;">Up-to-date</span></td>
+                </tr>
+                <tr>
+                  <td><strong>Rohan Das</strong></td>
+                  <td>Chest Press (2 days ago)</td>
+                  <td>2,500 kcal (Bulk phase)</td>
+                  <td><span class="status-badge pending">Update Diet Plan</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Quick actions -->
+          <div class="sim-table-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Workout & Diet Tools</h3>
+            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; width: 100%;">
+              Create custom workout plan
+            </button>
+            <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; width: 100%;">
+              Broadcast diet changes to group
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- 3. CLIENT DASHBOARD SIMULATOR -->
+  <main class="dashboard-sim" id="dashboard-client">
+    <div class="dashboard-sim-container">
+      
+      <!-- Top header bar -->
+      <header class="dashboard-sim-header">
+        <div class="dashboard-sim-profile">
+          <div class="avatar" style="background-color: var(--accent-primary); color: var(--btn-text);">C</div>
+          <div class="sim-user-details">
+            <h2 class="logo-text" style="font-size: 1.4rem;">Vyayam Member</h2>
+            <span class="sim-role-badge">Fitness Dashboard</span>
+          </div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: center;">
+          <a href="#" class="btn btn-secondary" onclick="logOutSim()">Sign Out</a>
+        </div>
+      </header>
+      
+      <!-- Sub navigation -->
+      <ul class="sim-nav">
+        <li><a href="#" class="sim-nav-link active">My Metrics</a></li>
+        <li><a href="#" class="sim-nav-link">Workout Plan</a></li>
+        <li><a href="#" class="sim-nav-link">Diet Logger</a></li>
+        <li><a href="#" class="sim-nav-link">Trainer Chat</a></li>
+        <li><a href="#" class="sim-nav-link">Settings</a></li>
+      </ul>
+      
+      <!-- Operations Center Panel -->
+      <section class="sim-panel">
+        <div>
+          <h1 style="font-size: 1.8rem; font-family: var(--font-display);">Personal Fitness Command Center ⚡</h1>
+          <p style="color: var(--text-secondary); font-size: 0.95rem; margin-top: 4px;">Track meal logs, view daily workouts, and check coaching updates from your trainer.</p>
+        </div>
+        
+        <!-- Metrics -->
+        <div class="sim-grid">
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Daily Calories</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 20.94c1.88-2.2 3-4.5 3-7.1 0-2.8-2.2-5-5-5s-5 2.2-5 5c0 2.6 1.12 4.9 3 7.1"></path></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">1,340 / 2,100 kcal</span>
+            <span class="sim-card-trend up">760 kcal remaining</span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Completed Workouts</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">3 / 5 this week</span>
+            <span class="sim-card-trend up">Next workout tomorrow</span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">Water Log</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">2.5 L / 3.0 L</span>
+            <span class="sim-card-trend up">Drink 500ml more</span>
+          </div>
+          
+          <div class="sim-card">
+            <div class="sim-card-header">
+              <span class="sim-card-title">My Trainers</span>
+              <div class="sim-card-icon-box">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle></svg>
+              </div>
+            </div>
+            <span class="sim-card-val">1 Assigned</span>
+            <span class="sim-card-trend up">Vikram Rathore</span>
+          </div>
+        </div>
+        
+        <div class="sim-table-section">
+          <!-- Meal Tracker -->
+          <div class="sim-table-card">
+            <div class="sim-table-title">
+              <span>Today's Nutrition Log</span>
+              <button class="btn btn-primary" style="padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-sm);">+ Log Meal</button>
+            </div>
+            <table class="sim-table">
+              <thead>
+                <tr>
+                  <th>Meal</th>
+                  <th>Calories</th>
+                  <th>Protein</th>
+                  <th>Carbs</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Oatmeal & Banana</strong></td>
+                  <td>450 kcal</td>
+                  <td>15g</td>
+                  <td>60g</td>
+                </tr>
+                <tr>
+                  <td><strong>Grilled Chicken Salad</strong></td>
+                  <td>620 kcal</td>
+                  <td>48g</td>
+                  <td>12g</td>
+                </tr>
+                <tr>
+                  <td><strong>Whey Protein Shake</strong></td>
+                  <td>270 kcal</td>
+                  <td>25g</td>
+                  <td>8g</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Trainer recommendations -->
+          <div class="sim-table-card" style="display: flex; flex-direction: column; gap: 16px;">
+            <h3 style="font-size: 1.1rem; font-weight: 700;">Coach Recommendations</h3>
+            <div style="background-color: rgba(255,255,255,0.02); padding: 16px; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+              <p style="font-size: 0.9rem; color: var(--accent-primary); font-weight: 600; margin-bottom: 6px;">Trainer Vikram Rathore says:</p>
+              <p style="font-size: 0.85rem; color: var(--text-secondary);">"Make sure to increase water intake before starting leg day tomorrow. Focus on high resistance squats. Keep it up!"</p>
+            </div>
+            <button class="btn btn-secondary" style="width: 100%;">
+              Open Trainer chatroom
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Loader Screens -->
+  <div class="auth-loader" id="auth-loader">
+    <div class="spinner"></div>
+    <div class="loader-text" id="loader-text">Securing session...</div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- JavaScript controller -->
+  <script>
+    // Toggle password view
+    const passwordToggleBtn = document.getElementById('password-toggle-btn');
+    const loginPassword = document.getElementById('login-password');
+    if (passwordToggleBtn && loginPassword) {
+      passwordToggleBtn.addEventListener('click', () => {
+        const type = loginPassword.type === 'password' ? 'text' : 'password';
+        loginPassword.type = type;
+        
+        // Change icon state
+        const eyeIcon = document.getElementById('eye-icon');
+        if (type === 'text') {
+          eyeIcon.innerHTML = `
+            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+            <line x1="1" x2="23" y1="1" y2="23"></line>
+          `;
+        } else {
+          eyeIcon.innerHTML = `
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          `;
+        }
+      });
+    }
+
+    // Theme Switch logic for auth page
+    const authThemeToggle = document.getElementById('auth-theme-toggle');
+    const savedTheme = localStorage.getItem('vyayam-theme') || 'dark';
+    
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-theme');
+    } else {
+      document.body.classList.remove('light-theme');
+    }
+
+    if (authThemeToggle) {
+      authThemeToggle.addEventListener('click', () => {
+        document.body.classList.toggle('light-theme');
+        const currentTheme = document.body.classList.contains('light-theme') ? 'light' : 'dark';
+        localStorage.setItem('vyayam-theme', currentTheme);
+      });
+    }
+
+    // Form submission validation & role-based dashboard redirects
+    const loginForm = document.getElementById('login-form');
+    const googleLoginBtn = document.getElementById('google-login-btn');
+    const authLoader = document.getElementById('auth-loader');
+    const loaderText = document.getElementById('loader-text');
+    const authView = document.getElementById('auth-view');
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email').value.trim();
+        const password = document.getElementById('login-password').value;
+
+        if (!validateEmail(email)) {
+          showToast('Please enter a valid email address.', 'error');
+          return;
+        }
+
+        if (password.length < 6) {
+          showToast('Password must be at least 6 characters long.', 'error');
+          return;
+        }
+
+        // Authenticate simulated role-based
+        triggerAuthRedirect(email);
+      });
+    }
+
+    if (googleLoginBtn) {
+      googleLoginBtn.addEventListener('click', () => {
+        // Google authentication defaults to Admin role in simulation for demonstration
+        showToast('Initiating Google authentication...', 'success');
+        triggerAuthRedirect('admin@vyayam.ai');
+      });
+    }
+
+    function triggerAuthRedirect(email) {
+      authLoader.style.display = 'flex';
+      
+      // Step-by-step loading simulation
+      setTimeout(() => {
+        loaderText.textContent = "Verifying JWT session tokens...";
+        setTimeout(() => {
+          loaderText.textContent = "Syncing role permissions...";
+          setTimeout(() => {
+            // Hide Loader
+            authLoader.style.display = 'none';
+            authView.style.display = 'none';
+            
+            // Determine role dashboard simulation
+            if (email === 'admin@vyayam.ai') {
+              document.getElementById('dashboard-admin').style.display = 'block';
+              showToast('Welcome, Administrator! Portal sync active.', 'success');
+            } else if (email === 'trainer@vyayam.ai') {
+              document.getElementById('dashboard-trainer').style.display = 'block';
+              showToast('Welcome, Trainer! Coaching labs active.', 'success');
+            } else {
+              document.getElementById('dashboard-client').style.display = 'block';
+              showToast('Welcome back to your member dashboard!', 'success');
+            }
+          }, 800);
+        }, 800);
+      }, 800);
+    }
+
+    function logOutSim() {
+      authLoader.style.display = 'flex';
+      loaderText.textContent = "Destroying session tokens...";
+      
+      setTimeout(() => {
+        authLoader.style.display = 'none';
+        
+        // Hide all simulation views
+        document.getElementById('dashboard-admin').style.display = 'none';
+        document.getElementById('dashboard-trainer').style.display = 'none';
+        document.getElementById('dashboard-client').style.display = 'none';
+        
+        // Display Login Card
+        authView.style.display = 'flex';
+        showToast('Logged out successfully.', 'success');
+      }, 1000);
+    }
+
+    // Helper functions (Toast, email regex)
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      
+      const icon = type === 'success' 
+        ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color: #10B981;"><polyline points="20 6 9 17 4 12"></polyline></svg>`
+        : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" style="color: #EF4444;"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="12"></line><line x1="12" x2="12.01" y1="16" y2="16"></line></svg>`;
+
+      toast.innerHTML = `
+        ${icon}
+        <span class="toast-message">${message}</span>
+      `;
+
+      container.appendChild(toast);
+
+      setTimeout(() => {
+        toast.classList.add('show');
+      }, 10);
+
+      setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+          toast.remove();
+        }, 400);
+      }, 4000);
+    }
+
+    // Email verification regex helper
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email);
+    }
+  </script>
+</body>
+</html>

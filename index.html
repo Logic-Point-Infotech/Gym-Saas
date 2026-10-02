@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <!-- SEO Meta Tags -->
+  <title>VYAYAM AI | Premium Gym Automation & Fitness Management Platform</title>
+  <meta name="description" content="Digitize and simplify your fitness journey with VYAYAM AI. A premium gym automation platform offering progress tracking, nutrition logging, trainer communication, and centralized gym administration.">
+  <meta name="keywords" content="Gym Automation, Fitness Tracker, Nutrition Tracking, Diet Planner, Gym Management SaaS, VYAYAM AI">
+  <meta name="author" content="VYAYAM AI Team">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="assets/logo.png">
+  
+  <!-- Custom Stylesheets -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header / Navigation Bar -->
+  <header class="header" id="header">
+    <div class="container nav-container">
+      <a href="#home" class="logo-link">
+        <img src="assets/logo.png" alt="VYAYAM AI Logo" class="logo-img" id="nav-logo">
+        <span class="logo-text">VYAYAM AI</span>
+      </a>
+      
+      <nav>
+        <ul class="nav-menu" id="nav-menu">
+          <li><a href="#home" class="nav-link active">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#features" class="nav-link">Features</a></li>
+          <li><a href="#faq" class="nav-link">FAQ</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+      
+      <div class="nav-actions">
+        <!-- Theme Toggle Switch -->
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle light and dark theme">
+          <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+        
+        <!-- Mobile Menu Trigger -->
+        <button class="menu-btn" id="menu-btn" aria-label="Open navigation menu">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="4" x2="20" y1="12" y2="12"></line>
+            <line x1="4" x2="20" y1="6" y2="6"></line>
+            <line x1="4" x2="20" y1="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <div class="container hero-grid">
+      <div class="hero-content">
+        <h1 class="hero-title">Transform Your Fitness Journey with <span class="brand-highlight">VYAYAM AI</span></h1>
+        <p class="hero-subtitle">VYAYAM AI is an intelligent Gym Automation platform that simplifies gym management, nutrition tracking, fitness monitoring, trainer communication, and membership management through one seamless digital experience.</p>
+        <div class="hero-actions">
+          <a href="#about" class="btn btn-primary">Learn More</a>
+        </div>
+      </div>
+      
+      <div class="hero-visual">
+        <div class="mockup-container">
+          <!-- Dynamic Mockup based on Theme -->
+          <img src="assets/dashboard-dark.png" alt="VYAYAM AI Dashboard Mockup" class="mockup-desktop" id="hero-dashboard-img">
+          
+          <!-- Mobile Mockup Overlay -->
+          <div class="mockup-mobile">
+            <div class="mockup-mobile-screen">
+              <div class="mockup-mobile-card">
+                <span class="mockup-mobile-title">Calories Burned</span>
+                <span class="mockup-mobile-val">740 kcal</span>
+              </div>
+              <div class="mockup-mobile-card">
+                <span class="mockup-mobile-title">Target Intake</span>
+                <span class="mockup-mobile-val">2,100 kcal</span>
+              </div>
+              <div class="mockup-mobile-card">
+                <span class="mockup-mobile-title">My Trainers</span>
+                <span class="mockup-mobile-val">2 Active</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Floating UI Badges -->
+          <div class="floating-badge floating-badge-1">
+            <div class="badge-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
+                <polyline points="16 7 22 7 22 13"></polyline>
+              </svg>
+            </div>
+            <div class="badge-info">
+              <span class="badge-lbl">Monthly Growth</span>
+              <span class="badge-val">+12% Active</span>
+            </div>
+          </div>
+          
+          <div class="floating-badge floating-badge-2">
+            <div class="badge-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+            </div>
+            <div class="badge-info">
+              <span class="badge-lbl">AI Insights</span>
+              <span class="badge-val">Active Command</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Us Section (Centered, Stats Card Visual Removed) -->
+  <section class="section section-alt" id="about">
+    <div class="container about-container">
+      <span class="section-tag">About the Platform</span>
+      <h2 class="section-title">About VYAYAM AI</h2>
+      <p class="about-desc">VYAYAM AI is a comprehensive Gym Automation platform built to digitize and simplify fitness management. The platform brings together members, trainers, and administrators into one integrated ecosystem, enabling efficient communication, progress tracking, nutrition management, and operational control.</p>
+      <p class="about-desc">Our goal is to enhance the fitness experience through technology while making gym management smarter, faster, and more organized.</p>
+      <div class="about-bullets">
+        <div class="about-bullet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Intelligent Insights</span>
+        </div>
+        <div class="about-bullet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Dual Theme Layouts</span>
+        </div>
+        <div class="about-bullet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Role-Based Access</span>
+        </div>
+        <div class="about-bullet">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+          <span>Real-time Sync</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Platform Features Section -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Empowering Capabilities</span>
+        <h2 class="section-title">Platform Features</h2>
+        <p class="section-subtitle">VYAYAM AI provides a unified ecosystem with premium features customized to elevate your gym's operations and fitness routines.</p>
+      </div>
+      
+      <div class="features-grid">
+        <!-- Feature 1 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m6.5 6.5 11 11"></path>
+              <path d="m21 21-1-1"></path>
+              <path d="m3 3 1 1"></path>
+              <path d="m18.5 5.5 3 3"></path>
+              <path d="m2.5 15.5 6 6"></path>
+              <path d="m15.5 2.5 6 6"></path>
+              <path d="M5.5 18.5 8.5 21.5"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Workout & Fitness Management</h3>
+          <p class="feature-desc">Track fitness progress, monitor personal goals, manage workout routines, and maintain a consistent fitness journey through an intuitive digital platform.</p>
+        </div>
+        
+        <!-- Feature 2 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 20.94c1.88-2.2 3-4.5 3-7.1 0-2.8-2.2-5-5-5s-5 2.2-5 5c0 2.6 1.12 4.9 3 7.1"></path>
+              <path d="M12 5V3"></path>
+              <path d="M12 12h.01"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Smart Nutrition Tracking</h3>
+          <p class="feature-desc">Log meals, monitor calories and macronutrients, and gain meaningful insights into daily nutritional intake to support healthier eating habits.</p>
+        </div>
+        
+        <!-- Feature 3 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 6h18"></path>
+              <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+              <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Personalized Diet Planning</h3>
+          <p class="feature-desc">Access customized diet plans tailored to individual fitness goals, helping users maintain balanced nutrition and improve overall health.</p>
+        </div>
+        
+        <!-- Feature 4 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 3v18h18"></path>
+              <path d="m19 9-5 5-4-4-3 3"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Progress Monitoring</h3>
+          <p class="feature-desc">Visualize fitness improvements through weight tracking, BMI calculations, progress charts, and milestone achievements over time.</p>
+        </div>
+        
+        <!-- Feature 5 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+            </svg>
+          </div>
+          <h3 class="feature-title">Seamless Communication</h3>
+          <p class="feature-desc">Enable efficient communication between members and trainers through integrated messaging, recommendations, and personalized guidance.</p>
+        </div>
+        
+        <!-- Feature 6 -->
+        <div class="feature-card">
+          <div class="feature-icon-wrapper">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" x2="16" y1="2" y2="6"></line>
+              <line x1="8" x2="8" y1="2" y2="6"></line>
+              <line x1="3" x2="21" y1="10" y2="10"></line>
+            </svg>
+          </div>
+          <h3 class="feature-title">Centralized Gym Administration</h3>
+          <p class="feature-desc">Manage memberships, attendance, users, schedules, announcements, reports, and daily gym operations through a centralized management platform.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section class="section section-alt" id="faq">
+    <div class="container">
+      <div class="section-header">
+        <span class="section-tag">Common Inquiries</span>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <p class="section-subtitle">Find fast answers to common questions about using the platform, communicating with trainers, and managing subscriptions.</p>
+      </div>
+      
+      <div class="faq-list">
+        <!-- FAQ 1 -->
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-question">How do I register?</span>
+            <span class="faq-icon-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19"></line>
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Registration can be initiated by your local gym administrator. Once they create your profile in the administrative portal, you will receive an invitation email containing setup credentials to access your personal member portal.
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQ 2 -->
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-question">How do I contact my trainer?</span>
+            <span class="faq-icon-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19"></line>
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Once logged into your dashboard, go to the "Trainers" tab to view your allocated instructors. You can send immediate messages, ask questions about routines, and receive updated fitness recommendations.
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQ 3 -->
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-question">Can I upload health reports?</span>
+            <span class="faq-icon-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19"></line>
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Yes, VYAYAM AI supports health document and biometric report uploads. Uploaded records are encrypted securely and shared exclusively with your allocated trainer and medical supervisors for custom diet and exercise configurations.
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQ 4 -->
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-question">How is my diet plan created?</span>
+            <span class="faq-icon-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19"></line>
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              Your diet plan is synthesized combining AI nutritional calculations based on your BMI, weight targets, and activity logs, which is then fine-tuned and verified by your allocated gym nutritionist or professional coach.
+            </div>
+          </div>
+        </div>
+        
+        <!-- FAQ 5 -->
+        <div class="faq-item">
+          <button class="faq-trigger" aria-expanded="false">
+            <span class="faq-question">How secure is my data?</span>
+            <span class="faq-icon-box">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="12" x2="12" y1="5" y2="19"></line>
+                <line x1="5" x2="19" y1="12" y2="12"></line>
+              </svg>
+            </span>
+          </button>
+          <div class="faq-content">
+            <div class="faq-content-inner">
+              VYAYAM AI treats your personal information with absolute care. We use enterprise-grade end-to-end encryption (AES-256) for data transfers, safe database storage, and session-based authentication tokens to secure your workspace.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Us Section (Streamlined Centered Layout) -->
+  <section class="section" id="contact">
+    <div class="container contact-container">
+      <div class="contact-info">
+        <div>
+          <span class="section-tag">Get in Touch</span>
+          <h2 class="section-title" style="margin-top: 16px;">Contact Us</h2>
+          <p class="section-subtitle" style="margin-top: 12px; max-width: 580px; margin-left: auto; margin-right: auto;">Have questions about integrating VYAYAM AI into your gym or fitness center? Contact our enterprise team.</p>
+        </div>
+        
+        <div class="contact-details-centered">
+          <div class="contact-item">
+            <div class="contact-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+              </svg>
+            </div>
+            <div class="contact-text-box">
+              <span class="contact-lbl">Email Address</span>
+              <span class="contact-val">support@vyayam.ai</span>
+            </div>
+          </div>
+          
+          <div class="contact-item">
+            <div class="contact-icon-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+              </svg>
+            </div>
+            <div class="contact-text-box">
+              <span class="contact-lbl">Phone Number</span>
+              <span class="contact-val">+91 98765 43210</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="social-links" style="justify-content: center;">
+          <a href="#" class="social-link" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Twitter">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"></path>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+              <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+            </svg>
+          </a>
+          <a href="#" class="social-link" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18">
+              <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer Section (Support Column Removed, User Roles Cleaned Up) -->
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div class="footer-col footer-branding">
+        <a href="#home" class="logo-link">
+          <img src="assets/logo.png" alt="VYAYAM AI Logo" class="logo-img">
+          <span class="logo-text">VYAYAM AI</span>
+        </a>
+        <p class="footer-desc">Next generation Gym Automation platform bridging the gap between members, fitness trainers, and gym operations.</p>
+      </div>
+      
+      <div class="footer-col">
+        <h4 class="footer-col-title">Navigation</h4>
+        <ul class="footer-links">
+          <li><a href="#home" class="footer-link">Home</a></li>
+          <li><a href="#about" class="footer-link">About</a></li>
+          <li><a href="#features" class="footer-link">Features</a></li>
+          <li><a href="#faq" class="footer-link">FAQ</a></li>
+          <li><a href="#contact" class="footer-link">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    
+    <div class="container footer-bottom">
+      <p class="footer-copy">© 2026 VYAYAM AI. All Rights Reserved.</p>
+      <ul class="footer-bottom-links">
+        <li><a href="#" class="footer-bottom-link">Privacy Policy</a></li>
+        <li><a href="#" class="footer-bottom-link">Terms & Conditions</a></li>
+        <li><a href="#" class="footer-bottom-link">SLA Agreement</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Toast Container -->
+  <div class="toast-container" id="toast-container"></div>
+
+  <!-- Custom Scripts -->
+  <script src="script.js"></script>
+</body>
+</html>
