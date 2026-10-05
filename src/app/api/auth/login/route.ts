@@ -84,6 +84,9 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Login error:', error)
-    return errorResponse('Internal server error', 500)
+    return errorResponse(
+      (error as Error)?.message || 'Database connection error. Please verify database URL.',
+      500
+    )
   }
 }
