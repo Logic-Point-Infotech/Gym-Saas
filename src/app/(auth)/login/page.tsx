@@ -22,10 +22,10 @@ import {
   UserPlus, 
   LogIn,
   KeyRound,
-  CheckCircle2
+  CheckCircle2,
+  Database
 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
-import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -33,7 +33,6 @@ export default function LoginPage() {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
   const [forgotSubmitted, setForgotSubmitted] = useState(false)
 
@@ -61,12 +60,12 @@ export default function LoginPage() {
     setValue('password', 'Admin@123')
     toast({
       title: 'Credentials Loaded',
-      description: 'Default admin credentials entered. Click Sign In or submit.',
+      description: 'Default admin credentials entered. Click Sign In.',
       variant: 'info',
     })
   }
 
-  // Handle Default Email/Password Login
+  // Handle Supabase Database Login
   const onLoginSubmit = async (data: LoginInput) => {
     setIsLoading(true)
     try {
@@ -79,48 +78,29 @@ export default function LoginPage() {
       const result = await res.json()
 
       if (!res.ok) {
-        toast({ title: 'Login Failed', description: result.message || 'Invalid email or password', variant: 'error' })
+        toast({ 
+          title: 'Login Failed', 
+          description: result.message || 'Invalid email or password', 
+          variant: 'error' 
+        })
         return
       }
 
-      toast({ title: 'Welcome back!', description: 'Redirecting to Executive Dashboard...', variant: 'success' })
+      toast({ 
+        title: 'Welcome Back!', 
+        description: 'Authenticated with Supabase. Opening dashboard...', 
+        variant: 'success' 
+      })
       router.push('/dashboard')
       router.refresh()
     } catch {
-      toast({ title: 'Connection Error', description: 'Could not connect to authentication server.', variant: 'error' })
+      toast({ 
+        title: 'Connection Error', 
+        description: 'Unable to reach authentication server. Check network.', 
+        variant: 'error' 
+      })
     } finally {
       setIsLoading(false)
-    }
-  }
-
-  // Handle Google OAuth via Supabase
-  const handleGoogleOAuth = async () => {
-    setIsGoogleLoading(true)
-    try {
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined,
-        },
-      })
-
-      if (error) {
-        toast({
-          title: 'Google OAuth Notice',
-          description: 'To enable live Google login, connect your Google Client ID in the Supabase Dashboard. Auto-filling demo credentials instead.',
-          variant: 'info',
-        })
-        handleQuickDemoAdmin()
-      }
-    } catch {
-      toast({
-        title: 'Google OAuth',
-        description: 'Auto-filling default admin credentials for quick access.',
-        variant: 'info',
-      })
-      handleQuickDemoAdmin()
-    } finally {
-      setIsGoogleLoading(false)
     }
   }
 
@@ -211,7 +191,7 @@ export default function LoginPage() {
             <div className="flex justify-between items-center">
               <span className="text-[10px] font-bold tracking-widest text-emerald-400 uppercase flex items-center gap-1.5 bg-emerald-950/60 px-2.5 py-1 rounded-full border border-emerald-500/30">
                 <Sparkles className="h-3 w-3" />
-                Live Cloud Sync
+                Supabase Live Database
               </span>
               <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
             </div>
@@ -229,8 +209,8 @@ export default function LoginPage() {
 
               <div className="pt-2 space-y-1.5">
                 <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                  <span>Database State</span>
-                  <span className="text-emerald-400 font-bold">Supabase PostgreSQL</span>
+                  <span>Supabase Sync Health</span>
+                  <span className="text-emerald-400 font-bold">PostgreSQL Connected</span>
                 </div>
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 w-full" />
@@ -239,17 +219,17 @@ export default function LoginPage() {
 
               <div className="grid grid-cols-2 gap-2.5 pt-2 text-xs">
                 <div className="bg-muted/40 rounded-xl p-3 border border-border/40">
-                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Security</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Auth Guard</p>
                   <p className="text-xs font-bold mt-0.5 text-foreground flex items-center gap-1">
                     <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-                    JWT & RBAC
+                    JWT & Cookies
                   </p>
                 </div>
                 <div className="bg-muted/40 rounded-xl p-3 border border-border/40">
-                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Cloud Auth</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Cloud Engine</p>
                   <p className="text-xs font-bold mt-0.5 text-foreground flex items-center gap-1">
-                    <KeyRound className="h-3.5 w-3.5 text-primary" />
-                    Google OAuth
+                    <Database className="h-3.5 w-3.5 text-primary" />
+                    Supabase DB
                   </p>
                 </div>
               </div>
@@ -282,7 +262,7 @@ export default function LoginPage() {
               {authMode === 'login' && (
                 <>
                   <CardTitle className="text-2xl font-extrabold tracking-tight">Executive Portal</CardTitle>
-                  <CardDescription className="text-xs mt-1">Sign in with your admin credentials to manage the gym system</CardDescription>
+                  <CardDescription className="text-xs mt-1">Sign in with your credentials to access the admin dashboard</CardDescription>
                 </>
               )}
               {authMode === 'register' && (
@@ -311,139 +291,110 @@ export default function LoginPage() {
               {/* TAB 1: SIGN IN MODE (Default)                            */}
               {/* ======================================================== */}
               {authMode === 'login' && (
-                <div className="space-y-4">
+                <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
                   
-                  {/* Google OAuth Button */}
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    onClick={handleGoogleOAuth}
-                    isLoading={isGoogleLoading}
-                    className="w-full text-xs h-11 border-border hover:bg-muted/60 font-semibold flex items-center justify-center gap-2.5 shadow-sm rounded-xl"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24">
-                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
-                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                    </svg>
-                    Continue with Google
-                  </Button>
-
-                  {/* Divider */}
-                  <div className="relative flex items-center justify-center my-2">
-                    <div className="border-t border-border w-full" />
-                    <span className="bg-card px-2.5 text-[10px] text-muted-foreground uppercase font-bold tracking-wider relative">
-                      Or Sign in with Email
-                    </span>
+                  {/* Quick Auto-Fill Demo Button */}
+                  <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between">
+                    <div className="text-left">
+                      <p className="text-[11px] font-bold text-foreground flex items-center gap-1">
+                        <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                        Quick Evaluator Access
+                      </p>
+                      <p className="text-[10px] text-muted-foreground font-mono">admin@gymadmin.com / Admin@123</p>
+                    </div>
+                    <Button 
+                      type="button" 
+                      size="sm" 
+                      variant="outline" 
+                      onClick={handleQuickDemoAdmin}
+                      className="text-xs h-7 px-2.5 border-primary/30 text-primary hover:bg-primary/20 font-semibold"
+                    >
+                      Auto-Fill
+                    </Button>
                   </div>
 
-                  {/* Form */}
-                  <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
-                    
-                    {/* Quick Auto-Fill Demo Button */}
-                    <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between">
-                      <div className="text-left">
-                        <p className="text-[11px] font-bold text-foreground flex items-center gap-1">
-                          <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
-                          Quick Demo Access
-                        </p>
-                        <p className="text-[10px] text-muted-foreground font-mono">admin@gymadmin.com / Admin@123</p>
-                      </div>
-                      <Button 
-                        type="button" 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={handleQuickDemoAdmin}
-                        className="text-xs h-7 px-2.5 border-primary/30 text-primary hover:bg-primary/20 font-semibold"
+                  <div className="space-y-1.5">
+                    <Label htmlFor="email" className="text-xs font-semibold">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="admin@gymadmin.com"
+                      autoComplete="email"
+                      error={errors.email?.message}
+                      className="bg-background/80 h-10 text-sm rounded-xl"
+                      {...register('email')}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <div className="flex justify-between items-center">
+                      <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+                      <button
+                        type="button"
+                        onClick={() => setAuthMode('forgot')}
+                        className="text-xs text-primary hover:underline font-medium"
                       >
-                        Auto-Fill
-                      </Button>
+                        Forgot Password?
+                      </button>
                     </div>
-
-                    <div className="space-y-1.5">
-                      <Label htmlFor="email" className="text-xs font-semibold">Email Address</Label>
+                    <div className="relative">
                       <Input
-                        id="email"
-                        type="email"
-                        placeholder="admin@gymadmin.com"
-                        autoComplete="email"
-                        error={errors.email?.message}
-                        className="bg-background/80 h-10 text-sm rounded-xl"
-                        {...register('email')}
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        placeholder="••••••••"
+                        autoComplete="current-password"
+                        error={errors.password?.message}
+                        className="bg-background/80 h-10 pr-10 text-sm rounded-xl"
+                        {...register('password')}
                       />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                      </button>
                     </div>
+                  </div>
 
-                    <div className="space-y-1.5">
-                      <div className="flex justify-between items-center">
-                        <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('forgot')}
-                          className="text-xs text-primary hover:underline font-medium"
-                        >
-                          Forgot Password?
-                        </button>
-                      </div>
-                      <div className="relative">
-                        <Input
-                          id="password"
-                          type={showPassword ? 'text' : 'password'}
-                          placeholder="••••••••"
-                          autoComplete="current-password"
-                          error={errors.password?.message}
-                          className="bg-background/80 h-10 pr-10 text-sm rounded-xl"
-                          {...register('password')}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </button>
-                      </div>
-                    </div>
+                  {/* Remember Me Checkbox */}
+                  <div className="flex items-center space-x-2 pt-1">
+                    <input
+                      type="checkbox"
+                      id="remember"
+                      checked={rememberMe}
+                      onChange={(e) => setRememberMe(e.target.checked)}
+                      className="rounded border-border bg-background text-primary focus:ring-primary h-4 w-4"
+                    />
+                    <label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer select-none">
+                      Remember me for 30 days
+                    </label>
+                  </div>
 
-                    {/* Remember Me Checkbox */}
-                    <div className="flex items-center space-x-2 pt-1">
-                      <input
-                        type="checkbox"
-                        id="remember"
-                        checked={rememberMe}
-                        onChange={(e) => setRememberMe(e.target.checked)}
-                        className="rounded border-border bg-background text-primary focus:ring-primary h-4 w-4"
-                      />
-                      <label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer select-none">
-                        Remember me for 30 days
-                      </label>
-                    </div>
+                  {/* Submit Button */}
+                  <Button 
+                    type="submit" 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm rounded-xl mt-2" 
+                    isLoading={isLoading}
+                  >
+                    <LogIn className="h-4 w-4 mr-2" />
+                    Sign In to Dashboard
+                  </Button>
 
-                    {/* Submit Button */}
-                    <Button 
-                      type="submit" 
-                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm rounded-xl" 
-                      isLoading={isLoading}
-                    >
-                      <LogIn className="h-4 w-4 mr-2" />
-                      Sign In to Dashboard
-                    </Button>
-
-                    {/* Switch to Register */}
-                    <div className="text-center pt-2">
-                      <p className="text-xs text-muted-foreground">
-                        Don&apos;t have an account?{' '}
-                        <button
-                          type="button"
-                          onClick={() => setAuthMode('register')}
-                          className="text-primary hover:underline font-bold"
-                        >
-                          Create Account
-                        </button>
-                      </p>
-                    </div>
-                  </form>
-                </div>
+                  {/* Switch to Register */}
+                  <div className="text-center pt-2">
+                    <p className="text-xs text-muted-foreground">
+                      Don&apos;t have an account?{' '}
+                      <button
+                        type="button"
+                        onClick={() => setAuthMode('register')}
+                        className="text-primary hover:underline font-bold"
+                      >
+                        Create Account
+                      </button>
+                    </p>
+                  </div>
+                </form>
               )}
 
               {/* ======================================================== */}
