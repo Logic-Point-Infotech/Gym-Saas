@@ -6,6 +6,8 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import HomeScreen from '../screens/HomeScreen';
 import NutritionScreen from '../screens/NutritionScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
+import DietPlanScreen from '../screens/DietPlanScreen';
+import TrainerScreen from '../screens/TrainerScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import MemberHistoryScreen from '../screens/MemberHistoryScreen';
 import { useTheme } from '../constants/ThemeContext';
@@ -39,6 +41,8 @@ const TabNavigator = () => {
           if (route.name === 'Home') iconName = 'view-dashboard';
           else if (route.name === 'Nutrition') iconName = 'food-apple';
           else if (route.name === 'Workouts') iconName = 'dumbbell';
+          else if (route.name === 'Diet Plan') iconName = 'silverware-fork-knife';
+          else if (route.name === 'Trainer') iconName = 'account-tie';
           else if (route.name === 'Profile') iconName = 'account';
 
           return <Icon name={iconName} size={size} color={color} />;
@@ -57,6 +61,8 @@ const TabNavigator = () => {
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Nutrition" component={NutritionScreen} />
       <Tab.Screen name="Workouts" component={WorkoutScreen} />
+      <Tab.Screen name="Diet Plan" component={DietPlanScreen} />
+      <Tab.Screen name="Trainer" component={TrainerScreen} />
       <Tab.Screen name="Profile" component={ProfileStack} />
     </Tab.Navigator>
   );

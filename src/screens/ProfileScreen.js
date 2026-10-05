@@ -46,7 +46,6 @@ const ProfileScreen = ({ navigation }) => {
         text: 'Logout',
         onPress: async () => {
           await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER]);
-          // Use common reload pattern or navigate
           navigation.reset({ index: 0, routes: [{ name: 'Auth' }] });
         }
       }
@@ -126,9 +125,19 @@ const ProfileScreen = ({ navigation }) => {
             <Text style={[styles.editBtnText, { color: theme.onPrimary }]}>Edit Profile</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.historyBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('MemberHistory')}>
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('MemberHistory')}>
             <Icon name="history" size={20} color={theme.primary} style={{ marginRight: 8 }} />
-            <Text style={[styles.historyBtnText, { color: theme.textPrimary }]}>Member History</Text>
+            <Text style={[styles.actionBtnText, { color: theme.textPrimary }]}>Member History</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('HealthReport')}>
+            <Icon name="heart-pulse" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.actionBtnText, { color: theme.textPrimary }]}>Health Reports</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.surface, borderColor: theme.border }]} onPress={() => navigation.navigate('BloodReport')}>
+            <Icon name="file-document-outline" size={20} color={theme.primary} style={{ marginRight: 8 }} />
+            <Text style={[styles.actionBtnText, { color: theme.textPrimary }]}>Blood Report AI</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={[styles.logoutBtn, { borderColor: theme.error }]} onPress={handleLogout}>
@@ -194,11 +203,11 @@ const styles = StyleSheet.create({
   infoList: { padding: 20, borderRadius: 20, borderWidth: 1, gap: 16 },
   infoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   infoText: { fontSize: 14, fontWeight: '500' },
-  editBtn: { marginTop: 32, height: 56, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
+  editBtn: { marginTop: 24, height: 56, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
   editBtnText: { fontSize: 16, fontWeight: 'bold' },
-  historyBtn: { marginTop: 16, height: 56, borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
-  historyBtnText: { fontSize: 16, fontWeight: 'bold' },
-  logoutBtn: { marginTop: 16, height: 56, borderRadius: 12, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
+  actionBtn: { marginTop: 12, height: 56, borderRadius: 12, borderWidth: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center' },
+  actionBtnText: { fontSize: 16, fontWeight: 'bold' },
+  logoutBtn: { marginTop: 24, height: 56, borderRadius: 12, borderWidth: 1, justifyContent: 'center', alignItems: 'center' },
   logoutText: { fontSize: 16, fontWeight: 'bold' },
   modalBg: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', padding: 20 },
   modalContent: { padding: 24, borderRadius: 24 },

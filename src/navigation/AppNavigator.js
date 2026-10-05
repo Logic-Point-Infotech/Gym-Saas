@@ -7,6 +7,8 @@ import TabNavigator from './TabNavigator';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import HealthReportScreen from '../screens/HealthReportScreen';
 import BloodReportScreen from '../screens/BloodReportScreen';
+import DietPlanScreen from '../screens/DietPlanScreen';
+import TrainerScreen from '../screens/TrainerScreen';
 import WorkoutScreen from '../screens/WorkoutScreen';
 import { AuthContext } from '../context/AuthContext';
 
@@ -38,6 +40,14 @@ const AppNavigator = () => {
           <Stack.Screen
             name="BloodReport"
             component={BloodReportScreen}
+          />
+          <Stack.Screen
+            name="DietPlan"
+            component={DietPlanScreen}
+          />
+          <Stack.Screen
+            name="Trainer"
+            component={TrainerScreen}
           />
           <Stack.Screen
             name="WorkoutDetail"
