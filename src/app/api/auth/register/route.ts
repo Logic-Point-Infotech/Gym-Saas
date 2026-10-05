@@ -74,6 +74,9 @@ export async function POST(request: NextRequest) {
     return response
   } catch (error) {
     console.error('Registration error:', error)
-    return errorResponse('Failed to create account', 500)
+    return errorResponse(
+      (error as Error)?.message || 'Failed to create account. Check database connection.',
+      500
+    )
   }
 }
