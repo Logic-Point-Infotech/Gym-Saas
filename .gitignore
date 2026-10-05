@@ -3,6 +3,21 @@
 # dependencies
 node_modules/
 
+# IDE & OS
+.idea/
+.vscode/
+.DS_Store
+
+# Logs & temp test files
+*.log
+server_err.log
+server_out.log
+
+# Media & non-project docs
+*.pptx
+*.pdf
+*.mp4
+
 # Expo
 .expo/
 dist/
@@ -26,12 +41,10 @@ npm-debug.*
 yarn-debug.*
 yarn-error.*
 
-# macOS
-.DS_Store
-*.pem
-
 # local env files
-.env*.local
+.env
+.env*
+macromate-backend/.env
 
 # typescript
 *.tsbuildinfo
