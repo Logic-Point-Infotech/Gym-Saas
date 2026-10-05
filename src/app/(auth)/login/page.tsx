@@ -25,6 +25,7 @@ import {
   CheckCircle2
 } from 'lucide-react'
 import { useToast } from '@/components/ui/toast'
+import { supabase } from '@/lib/supabase'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -32,6 +33,7 @@ export default function LoginPage() {
   const [authMode, setAuthMode] = useState<'login' | 'register' | 'forgot'>('login')
   const [showPassword, setShowPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false)
   const [rememberMe, setRememberMe] = useState(true)
   const [forgotSubmitted, setForgotSubmitted] = useState(false)
 
@@ -64,7 +66,7 @@ export default function LoginPage() {
     })
   }
 
-  // Handle Login Submit
+  // Handle Default Email/Password Login
   const onLoginSubmit = async (data: LoginInput) => {
     setIsLoading(true)
     try {
@@ -77,7 +79,7 @@ export default function LoginPage() {
       const result = await res.json()
 
       if (!res.ok) {
-        toast({ title: 'Login Failed', description: result.message || 'Invalid credentials', variant: 'error' })
+        toast({ title: 'Login Failed', description: result.message || 'Invalid email or password', variant: 'error' })
         return
       }
 
@@ -88,6 +90,37 @@ export default function LoginPage() {
       toast({ title: 'Connection Error', description: 'Could not connect to authentication server.', variant: 'error' })
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  // Handle Google OAuth via Supabase
+  const handleGoogleOAuth = async () => {
+    setIsGoogleLoading(true)
+    try {
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+          redirectTo: typeof window !== 'undefined' ? `${window.location.origin}/dashboard` : undefined,
+        },
+      })
+
+      if (error) {
+        toast({
+          title: 'Google OAuth Notice',
+          description: 'To enable live Google login, connect your Google Client ID in the Supabase Dashboard. Auto-filling demo credentials instead.',
+          variant: 'info',
+        })
+        handleQuickDemoAdmin()
+      }
+    } catch {
+      toast({
+        title: 'Google OAuth',
+        description: 'Auto-filling default admin credentials for quick access.',
+        variant: 'info',
+      })
+      handleQuickDemoAdmin()
+    } finally {
+      setIsGoogleLoading(false)
     }
   }
 
@@ -149,17 +182,6 @@ export default function LoginPage() {
     }
   }
 
-  // Handle OAuth Trigger
-  const handleOAuthLogin = (provider: 'Google' | 'Supabase') => {
-    toast({
-      title: `${provider} Authentication`,
-      description: `Connecting to ${provider} OAuth gateway... Using direct database credentials as fallback.`,
-      variant: 'info',
-    })
-    // Auto-fill demo credentials as fallback for immediate evaluator test
-    handleQuickDemoAdmin()
-  }
-
   return (
     <div className="flex flex-col md:flex-row w-full min-h-screen bg-background overflow-x-hidden">
       {/* Left Section: Futuristic Branding Panel */}
@@ -207,8 +229,8 @@ export default function LoginPage() {
 
               <div className="pt-2 space-y-1.5">
                 <div className="flex justify-between text-xs font-medium text-muted-foreground">
-                  <span>Supabase Sync Health</span>
-                  <span className="text-emerald-400 font-bold">100% Operational</span>
+                  <span>Database State</span>
+                  <span className="text-emerald-400 font-bold">Supabase PostgreSQL</span>
                 </div>
                 <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                   <div className="h-full bg-gradient-to-r from-emerald-400 to-teal-400 w-full" />
@@ -224,10 +246,10 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <div className="bg-muted/40 rounded-xl p-3 border border-border/40">
-                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Database</p>
+                  <p className="text-[10px] text-muted-foreground uppercase font-semibold">Cloud Auth</p>
                   <p className="text-xs font-bold mt-0.5 text-foreground flex items-center gap-1">
                     <KeyRound className="h-3.5 w-3.5 text-primary" />
-                    PostgreSQL
+                    Google OAuth
                   </p>
                 </div>
               </div>
@@ -286,150 +308,142 @@ export default function LoginPage() {
             <CardContent className="px-6 pb-6 pt-2 space-y-4">
               
               {/* ======================================================== */}
-              {/* TAB 1: SIGN IN MODE                                      */}
+              {/* TAB 1: SIGN IN MODE (Default)                            */}
               {/* ======================================================== */}
               {authMode === 'login' && (
-                <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
+                <div className="space-y-4">
                   
-                  {/* Quick Auto-Fill Demo Button */}
-                  <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between">
-                    <div className="text-left">
-                      <p className="text-[11px] font-bold text-foreground flex items-center gap-1">
-                        <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
-                        Quick Evaluator Access
-                      </p>
-                      <p className="text-[10px] text-muted-foreground font-mono">admin@gymadmin.com / Admin@123</p>
-                    </div>
-                    <Button 
-                      type="button" 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={handleQuickDemoAdmin}
-                      className="text-xs h-7 px-2.5 border-primary/30 text-primary hover:bg-primary/20 font-semibold"
-                    >
-                      Auto-Fill
-                    </Button>
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-xs font-semibold">Email Address</Label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="admin@gymadmin.com"
-                      autoComplete="email"
-                      error={errors.email?.message}
-                      className="bg-background/80 h-10 text-sm"
-                      {...register('email')}
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between items-center">
-                      <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
-                      <button
-                        type="button"
-                        onClick={() => setAuthMode('forgot')}
-                        className="text-xs text-primary hover:underline font-medium"
-                      >
-                        Forgot Password?
-                      </button>
-                    </div>
-                    <div className="relative">
-                      <Input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        autoComplete="current-password"
-                        error={errors.password?.message}
-                        className="bg-background/80 h-10 pr-10 text-sm"
-                        {...register('password')}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                      >
-                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Remember Me Checkbox */}
-                  <div className="flex items-center space-x-2 pt-1">
-                    <input
-                      type="checkbox"
-                      id="remember"
-                      checked={rememberMe}
-                      onChange={(e) => setRememberMe(e.target.checked)}
-                      className="rounded border-border bg-background text-primary focus:ring-primary h-4 w-4"
-                    />
-                    <label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer select-none">
-                      Remember me for 30 days
-                    </label>
-                  </div>
-
-                  {/* Submit Button */}
+                  {/* Google OAuth Button */}
                   <Button 
-                    type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm mt-2" 
-                    isLoading={isLoading}
+                    type="button" 
+                    variant="outline" 
+                    onClick={handleGoogleOAuth}
+                    isLoading={isGoogleLoading}
+                    className="w-full text-xs h-11 border-border hover:bg-muted/60 font-semibold flex items-center justify-center gap-2.5 shadow-sm rounded-xl"
                   >
-                    <LogIn className="h-4 w-4 mr-2" />
-                    Sign In to Dashboard
+                    <svg className="h-4 w-4" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                    Continue with Google
                   </Button>
 
                   {/* Divider */}
-                  <div className="relative flex items-center justify-center my-3">
+                  <div className="relative flex items-center justify-center my-2">
                     <div className="border-t border-border w-full" />
                     <span className="bg-card px-2.5 text-[10px] text-muted-foreground uppercase font-bold tracking-wider relative">
-                      Or Connect With
+                      Or Sign in with Email
                     </span>
                   </div>
 
-                  {/* Social / OAuth Buttons */}
-                  <div className="grid grid-cols-2 gap-2.5">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => handleOAuthLogin('Google')}
-                      className="w-full text-xs h-9 border-border/60 hover:bg-muted/50 font-medium flex items-center justify-center gap-2"
-                    >
-                      <svg className="h-3.5 w-3.5" viewBox="0 0 24 24">
-                        <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                        <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.26 21.36 7.34 24 12 24z"/>
-                        <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
-                        <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.26 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                      </svg>
-                      Google
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => handleOAuthLogin('Supabase')}
-                      className="w-full text-xs h-9 border-border/60 hover:bg-muted/50 font-medium flex items-center justify-center gap-2"
-                    >
-                      <svg className="h-3.5 w-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M11.996 0C5.37 0 0 5.372 0 12c0 5.303 3.438 9.8 8.205 11.387.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.298 24 12c0-6.628-5.373-12-12.004-12"/>
-                      </svg>
-                      Supabase
-                    </Button>
-                  </div>
-
-                  {/* Switch to Register */}
-                  <div className="text-center pt-2">
-                    <p className="text-xs text-muted-foreground">
-                      Don&apos;t have an account?{' '}
-                      <button
-                        type="button"
-                        onClick={() => setAuthMode('register')}
-                        className="text-primary hover:underline font-bold"
+                  {/* Form */}
+                  <form onSubmit={handleSubmit(onLoginSubmit)} className="space-y-4">
+                    
+                    {/* Quick Auto-Fill Demo Button */}
+                    <div className="p-2.5 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-between">
+                      <div className="text-left">
+                        <p className="text-[11px] font-bold text-foreground flex items-center gap-1">
+                          <Zap className="h-3.5 w-3.5 text-amber-400 fill-amber-400" />
+                          Quick Demo Access
+                        </p>
+                        <p className="text-[10px] text-muted-foreground font-mono">admin@gymadmin.com / Admin@123</p>
+                      </div>
+                      <Button 
+                        type="button" 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={handleQuickDemoAdmin}
+                        className="text-xs h-7 px-2.5 border-primary/30 text-primary hover:bg-primary/20 font-semibold"
                       >
-                        Create Account
-                      </button>
-                    </p>
-                  </div>
-                </form>
+                        Auto-Fill
+                      </Button>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email" className="text-xs font-semibold">Email Address</Label>
+                      <Input
+                        id="email"
+                        type="email"
+                        placeholder="admin@gymadmin.com"
+                        autoComplete="email"
+                        error={errors.email?.message}
+                        className="bg-background/80 h-10 text-sm rounded-xl"
+                        {...register('email')}
+                      />
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between items-center">
+                        <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('forgot')}
+                          className="text-xs text-primary hover:underline font-medium"
+                        >
+                          Forgot Password?
+                        </button>
+                      </div>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          placeholder="••••••••"
+                          autoComplete="current-password"
+                          error={errors.password?.message}
+                          className="bg-background/80 h-10 pr-10 text-sm rounded-xl"
+                          {...register('password')}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                        >
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Remember Me Checkbox */}
+                    <div className="flex items-center space-x-2 pt-1">
+                      <input
+                        type="checkbox"
+                        id="remember"
+                        checked={rememberMe}
+                        onChange={(e) => setRememberMe(e.target.checked)}
+                        className="rounded border-border bg-background text-primary focus:ring-primary h-4 w-4"
+                      />
+                      <label htmlFor="remember" className="text-xs text-muted-foreground cursor-pointer select-none">
+                        Remember me for 30 days
+                      </label>
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button 
+                      type="submit" 
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm rounded-xl" 
+                      isLoading={isLoading}
+                    >
+                      <LogIn className="h-4 w-4 mr-2" />
+                      Sign In to Dashboard
+                    </Button>
+
+                    {/* Switch to Register */}
+                    <div className="text-center pt-2">
+                      <p className="text-xs text-muted-foreground">
+                        Don&apos;t have an account?{' '}
+                        <button
+                          type="button"
+                          onClick={() => setAuthMode('register')}
+                          className="text-primary hover:underline font-bold"
+                        >
+                          Create Account
+                        </button>
+                      </p>
+                    </div>
+                  </form>
+                </div>
               )}
 
               {/* ======================================================== */}
@@ -445,7 +459,7 @@ export default function LoginPage() {
                       placeholder="Vikram Malhotra"
                       value={regName}
                       onChange={(e) => setRegName(e.target.value)}
-                      className="bg-background/80 h-10 text-sm"
+                      className="bg-background/80 h-10 text-sm rounded-xl"
                       required
                     />
                   </div>
@@ -458,7 +472,7 @@ export default function LoginPage() {
                       placeholder="vikram@gymadmin.com"
                       value={regEmail}
                       onChange={(e) => setRegEmail(e.target.value)}
-                      className="bg-background/80 h-10 text-sm"
+                      className="bg-background/80 h-10 text-sm rounded-xl"
                       required
                     />
                   </div>
@@ -471,14 +485,14 @@ export default function LoginPage() {
                       placeholder="Create strong password"
                       value={regPassword}
                       onChange={(e) => setRegPassword(e.target.value)}
-                      className="bg-background/80 h-10 text-sm"
+                      className="bg-background/80 h-10 text-sm rounded-xl"
                       required
                     />
                   </div>
 
                   <Button 
                     type="submit" 
-                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm mt-2" 
+                    className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-11 shadow-lg shadow-primary/20 text-sm rounded-xl mt-2" 
                     isLoading={isLoading}
                   >
                     <UserPlus className="h-4 w-4 mr-2" />
@@ -516,7 +530,7 @@ export default function LoginPage() {
                             placeholder="admin@gymadmin.com"
                             value={forgotEmail}
                             onChange={(e) => setForgotEmail(e.target.value)}
-                            className="bg-background/80 h-10 pl-9 text-sm"
+                            className="bg-background/80 h-10 pl-9 text-sm rounded-xl"
                             required
                           />
                           <Mail className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -525,7 +539,7 @@ export default function LoginPage() {
 
                       <Button 
                         type="submit" 
-                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 shadow-lg text-sm" 
+                        className="w-full bg-primary hover:bg-primary/90 text-primary-foreground font-bold h-10 shadow-lg text-sm rounded-xl" 
                         isLoading={isLoading}
                       >
                         Send Reset Link
@@ -543,7 +557,7 @@ export default function LoginPage() {
                       <Button 
                         variant="outline" 
                         onClick={() => { setAuthMode('login'); setForgotSubmitted(false); }}
-                        className="text-xs h-9"
+                        className="text-xs h-9 rounded-xl"
                       >
                         Return to Sign In
                       </Button>
