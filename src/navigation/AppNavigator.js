@@ -2,8 +2,10 @@
 import React, { useContext } from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import SplashScreen from '../screens/SplashScreen';
+import RoleSelectionScreen from '../screens/RoleSelectionScreen';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
+import TrainerTabNavigator from '../trainer/navigation/TrainerTabNavigator';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import HealthReportScreen from '../screens/HealthReportScreen';
 import BloodReportScreen from '../screens/BloodReportScreen';
@@ -15,12 +17,23 @@ import { AuthContext } from '../context/AuthContext';
 const Stack = createNativeStackNavigator();
 
 const AppNavigator = () => {
-  const { isLoading, userToken } = useContext(AuthContext);
+  const { isLoading, userToken, activeRole, selectRole } = useContext(AuthContext);
 
   if (isLoading) {
     return <SplashScreen />;
   }
 
+  // 1. Role Selection Screen (at launch if no active role chosen)
+  if (!activeRole) {
+    return <RoleSelectionScreen />;
+  }
+
+  // 2. Trainer Portal Flow
+  if (activeRole === 'trainer') {
+    return <TrainerTabNavigator onSwitchRole={() => selectRole(null)} />;
+  }
+
+  // 3. Client App Flow
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       {userToken == null ? (
