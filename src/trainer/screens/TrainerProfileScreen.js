@@ -185,7 +185,7 @@ export default function TrainerProfileScreen({ onSwitchRole }) {
           <View style={styles.heroTop}>
             <View style={styles.avatarWrap}>
               <View style={styles.avatarPlaceholder}>
-                <Ionicons name="account" size={48} color={colors.accent} />
+                <Ionicons name="person" size={48} color={colors.accent} />
               </View>
               <TouchableOpacity style={styles.cameraBtn}>
                 <Ionicons name="camera" size={13} color={colors.onPrimary} />

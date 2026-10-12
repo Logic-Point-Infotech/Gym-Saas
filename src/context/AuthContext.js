@@ -36,7 +36,11 @@ export const AuthProvider = ({ children }) => {
 
   const selectRole = async (role) => {
     setActiveRole(role);
-    await AsyncStorage.setItem('macromate_active_role', role);
+    if (role) {
+      await AsyncStorage.setItem('macromate_active_role', role);
+    } else {
+      await AsyncStorage.removeItem('macromate_active_role');
+    }
   };
 
   const login = async (token, userData) => {
