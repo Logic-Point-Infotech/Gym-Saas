@@ -37,6 +37,7 @@ const nutritionRoutes = require('./routes/nutritionRoutes');
 const workoutRoutes = require('./routes/workoutRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const attendanceRoutes = require('./routes/attendanceRoutes');
+const trainerApiRoutes = require('./routes/trainerApiRoutes');
 
 // Mount Routes
 app.use('/api/auth', authRoutes);
@@ -46,6 +47,7 @@ app.use('/api/nutrition', nutritionRoutes);
 app.use('/api/workout', workoutRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/attendance', attendanceRoutes);
+app.use('/api', trainerApiRoutes);
 
 // Health Check
 app.get('/api/health', (req, res) => {
