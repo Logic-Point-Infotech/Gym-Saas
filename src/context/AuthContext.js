@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../utils/helpers';
+import { setOnUnauthorized } from '../api/client';
 
 export const AuthContext = createContext();
 
@@ -12,6 +13,10 @@ export const AuthProvider = ({ children }) => {
   const [activeRole, setActiveRole] = useState(null); // 'client' | 'trainer' | null
 
   useEffect(() => {
+    setOnUnauthorized(() => {
+      setUserToken(null);
+      setUser(null);
+    });
     loadStorageData();
   }, []);
 

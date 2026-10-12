@@ -8,6 +8,12 @@ const client = axios.create({
   timeout: 10000,
 });
 
+let onUnauthorizedCallback = null;
+
+export const setOnUnauthorized = (cb) => {
+  onUnauthorizedCallback = cb;
+};
+
 // Request Interceptor: Attach Token
 client.interceptors.request.use(
   async (config) => {
@@ -26,7 +32,9 @@ client.interceptors.response.use(
   async (error) => {
     if (error.response && error.response.status === 401) {
       await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER]);
-      // Navigation reset logic will be handled by AppNavigator listening to storage changes or re-mounting
+      if (onUnauthorizedCallback) {
+        onUnauthorizedCallback();
+      }
     }
 
     // Extract readable error message
