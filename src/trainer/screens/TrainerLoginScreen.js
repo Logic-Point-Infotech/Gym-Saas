@@ -24,7 +24,8 @@ const TrainerLoginScreen = ({ navigation }) => {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    if (!emailOrId || !password) {
+    const cleanId = emailOrId.trim();
+    if (!cleanId || !password) {
       setError('Please fill in all fields');
       return;
     }
@@ -32,7 +33,7 @@ const TrainerLoginScreen = ({ navigation }) => {
     setLoading(true);
     setError('');
     try {
-      const data = await loginUser(emailOrId, password);
+      const data = await loginUser(cleanId, password);
       if (data.user?.role !== 'trainer') {
         setError('This account is not registered as a Trainer.');
         setLoading(false);

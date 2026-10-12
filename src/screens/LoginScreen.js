@@ -24,13 +24,14 @@ const LoginScreen = ({ navigation }) => {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    if (!memberId || !password) {
+    const cleanId = memberId.trim().toUpperCase();
+    if (!cleanId || !password) {
       setError('Please fill in all fields');
       return;
     }
 
-    const memberIdRegex = /^MM-\d{4}-\d{5}$/;
-    if (!memberIdRegex.test(memberId)) {
+    const memberIdRegex = /^MM-\d{4}-[A-Z0-9]{5}$/i;
+    if (!memberIdRegex.test(cleanId)) {
       setError('Invalid Member ID format (MM-YYYY-XXXXX)');
       return;
     }
@@ -38,10 +39,10 @@ const LoginScreen = ({ navigation }) => {
     setLoading(true);
     setError('');
     try {
-      const data = await loginUser(memberId, password);
+      const data = await loginUser(cleanId, password);
       await login(data.token, data.user);
     } catch (err) {
-      setError(err.message);
+      setError(err.message || 'Login failed');
     } finally {
       setLoading(false);
     }
