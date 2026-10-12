@@ -6,6 +6,8 @@ import RoleSelectionScreen from '../screens/RoleSelectionScreen';
 import AuthNavigator from './AuthNavigator';
 import TabNavigator from './TabNavigator';
 import TrainerTabNavigator from '../trainer/navigation/TrainerTabNavigator';
+import TrainerLoginScreen from '../trainer/screens/TrainerLoginScreen';
+import TrainerRegisterScreen from '../trainer/screens/TrainerRegisterScreen';
 import NotificationsScreen from '../screens/NotificationsScreen';
 import HealthReportScreen from '../screens/HealthReportScreen';
 import BloodReportScreen from '../screens/BloodReportScreen';
@@ -23,13 +25,21 @@ const AppNavigator = () => {
     return <SplashScreen />;
   }
 
-  // 1. Role Selection Screen (at launch if no active role chosen)
+  // 1. Role Selection Screen (before any login)
   if (!activeRole) {
     return <RoleSelectionScreen />;
   }
 
   // 2. Trainer Portal Flow
   if (activeRole === 'trainer') {
+    if (userToken == null) {
+      return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="TrainerLogin" component={TrainerLoginScreen} />
+          <Stack.Screen name="TrainerRegister" component={TrainerRegisterScreen} />
+        </Stack.Navigator>
+      );
+    }
     return <TrainerTabNavigator onSwitchRole={() => selectRole(null)} />;
   }
 

@@ -11,7 +11,8 @@ const generateToken = (id, name, email, role, member_id) => {
 };
 
 const registerUser = async (req, res, next) => {
-  const { name, email, password, age, gender, height_cm, weight_kg, fitness_goal, dietary_preference } = req.body;
+  const { name, email, password, age, gender, height_cm, weight_kg, fitness_goal, dietary_preference, role } = req.body;
+  const userRole = role === 'trainer' ? 'trainer' : 'client';
 
   const connection = await db.getConnection();
   try {
@@ -30,25 +31,27 @@ const registerUser = async (req, res, next) => {
 
       const [userResult] = await connection.query(
         'INSERT INTO users (name, email, password_hash, role, member_id) VALUES (?, ?, ?, ?, ?)',
-        [name, email, hashedPassword, 'client', member_id]
+        [name, email, hashedPassword, userRole, member_id]
       );
       const userId = userResult.insertId;
 
-      const height_m = height_cm / 100;
-      const bmi = (weight_kg / (height_m * height_m)).toFixed(1);
+      if (userRole === 'client') {
+        const height_m = (height_cm || 170) / 100;
+        const bmi = ((weight_kg || 70) / (height_m * height_m)).toFixed(1);
 
-      await connection.query(
-        'INSERT INTO client_profiles (client_id, age, gender, height_cm, weight_kg, bmi, fitness_goal, dietary_preference, daily_calorie_target) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-        [userId, age, gender, height_cm, weight_kg, bmi, fitness_goal, dietary_preference, 2200]
-      );
+        await connection.query(
+          'INSERT INTO client_profiles (client_id, age, gender, height_cm, weight_kg, bmi, fitness_goal, dietary_preference, daily_calorie_target) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+          [userId, age || 25, gender || 'male', height_cm || 170, weight_kg || 70, bmi, fitness_goal || 'muscle_gain', dietary_preference || 'non_veg', 2200]
+        );
+      }
 
       await connection.commit();
 
-      const token = generateToken(userId, name, email, 'client', member_id);
+      const token = generateToken(userId, name, email, userRole, member_id);
 
       res.status(201).json({
         token,
-        user: { id: userId, name, email, role: 'client', member_id },
+        user: { id: userId, name, email, role: userRole, member_id },
       });
     } catch (err) {
       await connection.rollback();
@@ -62,12 +65,16 @@ const registerUser = async (req, res, next) => {
 };
 
 const loginUser = async (req, res, next) => {
-  const { member_id, password } = req.body;
+  const { member_id, email, password } = req.body;
+  const loginIdentifier = member_id || email;
 
   try {
-    const [users] = await db.query('SELECT * FROM users WHERE member_id = ?', [member_id]);
+    const [users] = await db.query(
+      'SELECT * FROM users WHERE member_id = ? OR email = ?',
+      [loginIdentifier, loginIdentifier]
+    );
     if (users.length === 0) {
-      return res.status(404).json({ message: 'Member ID not found' });
+      return res.status(404).json({ message: 'User or Member ID not found' });
     }
 
     const user = users[0];
