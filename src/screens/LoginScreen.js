@@ -11,12 +11,13 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { loginUser } from '../api/authApi';
 import theme, { SIZES, FONTS } from '../constants/theme';
 import { AuthContext } from '../context/AuthContext';
 
 const LoginScreen = ({ navigation }) => {
-  const { login } = useContext(AuthContext);
+  const { login, selectRole } = useContext(AuthContext);
   const [memberId, setMemberId] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,6 +53,13 @@ const LoginScreen = ({ navigation }) => {
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.topRow}>
+          <TouchableOpacity style={styles.roleSwitchBtn} onPress={() => selectRole(null)}>
+            <MaterialCommunityIcons name="swap-horizontal" size={16} color={theme.primary} />
+            <Text style={[styles.roleSwitchText, { color: theme.primary }]}>Change Role</Text>
+          </TouchableOpacity>
+        </View>
+
         <Text style={[styles.header, { color: theme.primary }]}>MacroMate</Text>
         <Text style={[styles.subHeader, { color: theme.textSecondary }]}>Login to your fitness hub</Text>
 
@@ -100,6 +108,9 @@ const LoginScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: SIZES.padding, flexGrow: 1, justifyContent: 'center' },
+  topRow: { alignItems: 'flex-start', marginBottom: 20 },
+  roleSwitchBtn: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingHorizontal: 12, paddingVertical: 8, borderRadius: 12, backgroundColor: 'rgba(232, 232, 64, 0.12)', borderWidth: 1, borderColor: 'rgba(232, 232, 64, 0.3)' },
+  roleSwitchText: { fontSize: 12, fontWeight: 'bold' },
   header: { fontSize: 36, fontWeight: 'bold' },
   subHeader: { fontSize: 16, marginBottom: 40 },
   form: { gap: 20 },

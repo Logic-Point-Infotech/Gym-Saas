@@ -16,6 +16,7 @@ export const AuthProvider = ({ children }) => {
     setOnUnauthorized(() => {
       setUserToken(null);
       setUser(null);
+      setActiveRole(null);
     });
     loadStorageData();
   }, []);
@@ -28,9 +29,12 @@ export const AuthProvider = ({ children }) => {
       if (token) {
         setUserToken(token);
         setUser(userData ? JSON.parse(userData) : null);
-      }
-      if (savedRole) {
-        setActiveRole(savedRole);
+        if (savedRole) {
+          setActiveRole(savedRole);
+        }
+      } else {
+        // First launch or logged out: force Role Selection!
+        setActiveRole(null);
       }
     } catch (e) {
       console.log('Error loading auth data', e);
