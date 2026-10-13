@@ -5,31 +5,44 @@ const path = require('path');
 const { generateMemberId } = require('../utils/memberIdGenerator');
 
 const initDb = async () => {
-  console.log('Initializing database schema and migrations...');
+  console.log('Initializing PostgreSQL / Supabase Database Schema...');
   try {
-    const migrationPath = path.join(__dirname, '../migrations/addMemberId.sql');
-    if (fs.existsSync(migrationPath)) {
-      const sql = fs.readFileSync(migrationPath, 'utf8');
+    // 1. Run PostgreSQL Schema
+    const schemaPath = path.join(__dirname, '../migrations/schema_postgres.sql');
+    if (fs.existsSync(schemaPath)) {
+      const sql = fs.readFileSync(schemaPath, 'utf8');
       const queries = sql.split(';').filter(q => q.trim().length > 0);
-      for (const query of queries) {
+      for (const queryText of queries) {
         try {
-          await db.query(query);
-          console.log('Ran query:', query.substring(0, 50) + '...');
+          await db.query(queryText);
         } catch (e) {
-          // Ignore duplicate column / index errors if already applied
-          if (!e.message.includes('Duplicate column name') && !e.message.includes('Duplicate key name')) {
-            console.log('Migration note:', e.message);
-          }
+          console.log('Schema statement note:', e.message);
         }
       }
+      console.log('PostgreSQL Schema initialized.');
     }
 
-    // Backfill member IDs
+    // 2. Run Seed Data
+    const seedPath = path.join(__dirname, '../seed_postgres.sql');
+    if (fs.existsSync(seedPath)) {
+      const sql = fs.readFileSync(seedPath, 'utf8');
+      const queries = sql.split(';').filter(q => q.trim().length > 0);
+      for (const queryText of queries) {
+        try {
+          await db.query(queryText);
+        } catch (e) {
+          console.log('Seed statement note:', e.message);
+        }
+      }
+      console.log('Seed Data inserted.');
+    }
+
+    // 3. Backfill Member IDs
     const connection = await db.getConnection();
     try {
       await connection.beginTransaction();
       const [clients] = await connection.query(
-        'SELECT id, name FROM users WHERE role = "client" AND member_id IS NULL ORDER BY id ASC'
+        "SELECT id, name FROM users WHERE role = 'client' AND member_id IS NULL ORDER BY id ASC"
       );
       for (const client of clients) {
         const newId = await generateMemberId(connection);
@@ -44,7 +57,7 @@ const initDb = async () => {
       connection.release();
     }
 
-    console.log('Database initialization completed successfully.');
+    console.log('PostgreSQL / Supabase Database initialization completed successfully.');
     process.exit(0);
   } catch (error) {
     console.error('Database initialization error:', error);
