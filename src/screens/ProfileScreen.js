@@ -1,15 +1,15 @@
 // src/screens/ProfileScreen.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, Alert, Modal, TextInput } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useTheme } from '../constants/ThemeContext';
 import { getProfile, updateProfile } from '../api/profileApi';
 import theme, { SIZES, SPACING, FONTS } from '../constants/theme';
-import { STORAGE_KEYS } from '../utils/helpers';
+import { AuthContext } from '../context/AuthContext';
 
 const ProfileScreen = ({ navigation }) => {
   const { theme } = useTheme();
+  const { logout } = useContext(AuthContext);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
@@ -45,8 +45,7 @@ const ProfileScreen = ({ navigation }) => {
       {
         text: 'Logout',
         onPress: async () => {
-          await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER]);
-          navigation.reset({ index: 0, routes: [{ name: 'Auth' }] });
+          await logout();
         }
       }
     ]);
