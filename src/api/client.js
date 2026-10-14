@@ -3,11 +3,9 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../utils/helpers';
 
-// Replace 'http://localhost:5000/api' with your deployed Render URL:
-// e.g., 'https://macromate-backend.onrender.com/api'
 const client = axios.create({
-  baseURL: 'http://localhost:5000/api',
-  timeout: 20000, // 20s timeout to gracefully handle cloud backend cold starts
+  baseURL: 'https://gym-saas-j0f7.onrender.com/api',
+  timeout: 20000, // 20s timeout handles Render free-tier cold starts
 });
 
 let onUnauthorizedCallback = null;
