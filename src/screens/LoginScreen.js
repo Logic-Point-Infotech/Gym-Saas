@@ -24,15 +24,9 @@ const LoginScreen = ({ navigation }) => {
   const [error, setError] = useState('');
 
   const handleLogin = async () => {
-    const cleanId = memberId.trim().toUpperCase();
+    const cleanId = memberId.trim();
     if (!cleanId || !password) {
       setError('Please fill in all fields');
-      return;
-    }
-
-    const memberIdRegex = /^MM-\d{4}-[A-Z0-9]{5}$/i;
-    if (!memberIdRegex.test(cleanId)) {
-      setError('Invalid Member ID format (MM-YYYY-XXXXX)');
       return;
     }
 
@@ -65,14 +59,14 @@ const LoginScreen = ({ navigation }) => {
         <Text style={[styles.subHeader, { color: theme.textSecondary }]}>Login to your fitness hub</Text>
 
         <View style={styles.form}>
-          <Text style={[styles.label, { color: theme.heading }]}>Member ID</Text>
+          <Text style={[styles.label, { color: theme.heading }]}>Member ID or Email</Text>
           <TextInput
             style={[styles.input, { backgroundColor: theme.surface, borderColor: theme.border, color: theme.textPrimary }]}
-            placeholder="MM-2026-00001"
+            placeholder="MM-2026-00001 or client@macromate.com"
             placeholderTextColor={theme.muted}
             value={memberId}
             onChangeText={setMemberId}
-            autoCapitalize="characters"
+            autoCapitalize="none"
           />
 
           <Text style={[styles.label, { color: theme.heading }]}>Password</Text>
