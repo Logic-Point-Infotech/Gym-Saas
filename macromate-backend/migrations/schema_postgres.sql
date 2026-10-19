@@ -153,9 +153,24 @@ CREATE TABLE IF NOT EXISTS workout_day_exercises (
 CREATE TABLE IF NOT EXISTS workout_logs (
     id SERIAL PRIMARY KEY,
     client_id INT REFERENCES users(id) ON DELETE CASCADE,
+    plan_id INT REFERENCES workout_plans(id) ON DELETE CASCADE,
     day_id INT REFERENCES workout_days(id) ON DELETE CASCADE,
     logged_date DATE DEFAULT CURRENT_DATE,
-    completed_sets INT
+    duration_minutes INT DEFAULT 0,
+    notes TEXT,
+    completed_sets INT DEFAULT 0,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Workout Set Logs
+CREATE TABLE IF NOT EXISTS workout_set_logs (
+    id SERIAL PRIMARY KEY,
+    workout_log_id INT REFERENCES workout_logs(id) ON DELETE CASCADE,
+    exercise_id INT REFERENCES exercises(id) ON DELETE CASCADE,
+    set_number INT,
+    reps_done INT,
+    weight_kg DECIMAL(5,2),
+    is_completed BOOLEAN DEFAULT TRUE
 );
 
 -- Notifications

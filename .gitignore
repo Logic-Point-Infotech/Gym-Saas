@@ -17,6 +17,7 @@ server_out.log
 *.pptx
 *.pdf
 *.mp4
+*.apk
 
 # Expo
 .expo/
