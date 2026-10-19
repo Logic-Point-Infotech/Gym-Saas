@@ -29,6 +29,17 @@ if (!fs.existsSync(uploadDir)) {
 // Static Files
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
+// Root Route Welcome Handler
+app.get('/', (req, res) => {
+  res.json({
+    name: 'MacroMate Backend API',
+    version: '1.0.0',
+    status: 'online',
+    health_check: '/api/health',
+    timestamp: new Date()
+  });
+});
+
 // Import Routes
 const authRoutes = require('./routes/authRoutes');
 const profileRoutes = require('./routes/profileRoutes');
