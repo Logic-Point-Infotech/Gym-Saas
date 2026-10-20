@@ -5,7 +5,7 @@ import { STORAGE_KEYS } from '../utils/helpers';
 
 const client = axios.create({
   baseURL: 'https://gym-saas-j0f7.onrender.com/api',
-  timeout: 20000, // 20s timeout handles Render free-tier cold starts
+  timeout: 25000, // 25s timeout handles Render free-tier cold starts
 });
 
 let onUnauthorizedCallback = null;
@@ -38,7 +38,7 @@ client.interceptors.response.use(
     }
 
     // Extract readable error message
-    const message = error.response?.data?.message || 'Something went wrong. Please try again.';
+    const message = error.response?.data?.message || error.message || 'Something went wrong. Please try again.';
     const enhancedError = new Error(message);
     enhancedError.status = error.response?.status;
 
