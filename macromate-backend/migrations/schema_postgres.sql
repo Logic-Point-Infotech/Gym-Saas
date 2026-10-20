@@ -126,7 +126,8 @@ CREATE TABLE IF NOT EXISTS workout_plans (
     client_id INT REFERENCES users(id) ON DELETE CASCADE,
     title VARCHAR(100) NOT NULL,
     split_type VARCHAR(50),
-    is_published BOOLEAN DEFAULT TRUE
+    is_published BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
 );
 
 -- Workout Days

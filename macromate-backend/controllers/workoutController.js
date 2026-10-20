@@ -4,7 +4,7 @@ const db = require('../config/db');
 const getWorkoutPlan = async (req, res, next) => {
   try {
     const [plans] = await db.query(
-      'SELECT * FROM workout_plans WHERE client_id = ? AND is_published = true ORDER BY created_at DESC LIMIT 1',
+      'SELECT * FROM workout_plans WHERE client_id = ? AND is_published = true ORDER BY id DESC LIMIT 1',
       [req.user.id]
     );
 
@@ -49,14 +49,16 @@ const logWorkout = async (req, res, next) => {
       );
       const logId = result.insertId;
 
-      await Promise.all(
-        set_logs.map((set) =>
-          db.query(
-            'INSERT INTO workout_set_logs (workout_log_id, exercise_id, set_number, reps_done, weight_kg, is_completed) VALUES (?, ?, ?, ?, ?, ?)',
-            [logId, set.exercise_id, set.set_number, set.reps_done, set.weight_kg, set.is_completed]
+      if (Array.isArray(set_logs) && set_logs.length > 0) {
+        await Promise.all(
+          set_logs.map((set) =>
+            db.query(
+              'INSERT INTO workout_set_logs (workout_log_id, exercise_id, set_number, reps_done, weight_kg, is_completed) VALUES (?, ?, ?, ?, ?, ?)',
+              [logId, set.exercise_id, set.set_number, set.reps_done, set.weight_kg, set.is_completed]
+            )
           )
-        )
-      );
+        );
+      }
 
       await db.query('COMMIT');
       res.status(201).json({ id: logId, message: 'Workout logged successfully' });
