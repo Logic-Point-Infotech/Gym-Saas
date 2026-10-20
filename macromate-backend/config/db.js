@@ -24,6 +24,10 @@ if (process.env.DATABASE_URL) {
 
 const pool = new Pool(poolConfig);
 
+pool.on('error', (err) => {
+  console.error('Unexpected error on idle PostgreSQL client:', err.message);
+});
+
 // Helper function to convert '?' placeholders to PostgreSQL '$1, $2...'
 function convertPlaceholders(sql) {
   let paramIndex = 1;

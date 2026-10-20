@@ -13,7 +13,7 @@ const getProfile = async (req, res, next) => {
       LEFT JOIN client_profiles cp ON u.id = cp.client_id
       LEFT JOIN memberships m ON u.id = m.client_id
       WHERE u.id = ?
-      ORDER BY m.end_date DESC LIMIT 1
+      ORDER BY m.end_date DESC NULLS LAST, u.id DESC LIMIT 1
     `;
 
     const [rows] = await db.query(query, [userId]);
@@ -32,8 +32,9 @@ const updateProfile = async (req, res, next) => {
   const { name, phone, age, weight_kg, height_cm, activity_level, fitness_goal, dietary_preference } = req.body;
   const userId = req.user.id;
 
+  const connection = await db.getConnection();
   try {
-    await db.query('START TRANSACTION');
+    await connection.beginTransaction();
 
     try {
       if (name || phone) {
@@ -42,10 +43,10 @@ const updateProfile = async (req, res, next) => {
         if (name) { userFields.push('name = ?'); params.push(name); }
         if (phone) { userFields.push('phone = ?'); params.push(phone); }
         params.push(userId);
-        await db.query(`UPDATE users SET ${userFields.join(', ')} WHERE id = ?`, params);
+        await connection.query(`UPDATE users SET ${userFields.join(', ')} WHERE id = ?`, params);
       }
 
-      const [currentProfile] = await db.query('SELECT height_cm, weight_kg FROM client_profiles WHERE client_id = ?', [userId]);
+      const [currentProfile] = await connection.query('SELECT height_cm, weight_kg FROM client_profiles WHERE client_id = ?', [userId]);
       const h = height_cm || (currentProfile[0]?.height_cm || 0);
       const w = weight_kg || (currentProfile[0]?.weight_kg || 0);
       const height_m = h / 100;
@@ -62,13 +63,15 @@ const updateProfile = async (req, res, next) => {
       profileFields.push('bmi = ?'); profileParams.push(bmi);
       profileParams.push(userId);
 
-      await db.query(`UPDATE client_profiles SET ${profileFields.join(', ')} WHERE client_id = ?`, profileParams);
+      await connection.query(`UPDATE client_profiles SET ${profileFields.join(', ')} WHERE client_id = ?`, profileParams);
 
-      await db.query('COMMIT');
+      await connection.commit();
       res.json({ message: 'Profile updated successfully' });
     } catch (err) {
-      await db.query('ROLLBACK');
+      await connection.rollback();
       throw err;
+    } finally {
+      connection.release();
     }
   } catch (error) {
     next(error);

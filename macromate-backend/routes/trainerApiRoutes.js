@@ -137,7 +137,7 @@ router.get('/workouts', async (req, res, next) => {
 // AI Endpoints
 router.get('/ai/risk-scores', async (req, res, next) => {
   try {
-    const [rows] = await db.query('SELECT id, name FROM users WHERE role = "client"');
+    const [rows] = await db.query('SELECT id, name FROM users WHERE role = ?', ['client']);
     const summary = { high: 1, medium: 2, low: Math.max(0, rows.length - 3), total: rows.length };
     res.json({ summary, data: rows.map(r => ({ id: r.id, name: r.name, risk: 'low' })) });
   } catch (err) { next(err); }

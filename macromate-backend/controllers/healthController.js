@@ -19,27 +19,31 @@ const logHealthMetrics = async (req, res, next) => {
 
   try {
     const [profile] = await db.query('SELECT height_cm FROM client_profiles WHERE client_id = ?', [userId]);
-    const height_m = profile[0].height_cm / 100;
-    const bmi = (weight_kg / (height_m * height_m)).toFixed(1);
+    const height_cm = profile[0]?.height_cm || 170;
+    const height_m = height_cm / 100;
+    const bmi = weight_kg ? (weight_kg / (height_m * height_m)).toFixed(1) : 22.0;
 
-    await db.query('START TRANSACTION');
-
+    const connection = await db.getConnection();
     try {
-      await db.query(
+      await connection.beginTransaction();
+
+      await connection.query(
         'INSERT INTO client_health_metrics (client_id, weight_kg, bmi, body_fat_percentage, muscle_mass_kg, notes) VALUES (?, ?, ?, ?, ?, ?)',
         [userId, weight_kg, bmi, body_fat_percentage, muscle_mass_kg, notes]
       );
 
-      await db.query(
+      await connection.query(
         'UPDATE client_profiles SET weight_kg = ?, bmi = ? WHERE client_id = ?',
         [weight_kg, bmi, userId]
       );
 
-      await db.query('COMMIT');
+      await connection.commit();
       res.status(201).json({ message: 'Metrics logged successfully', bmi });
     } catch (err) {
-      await db.query('ROLLBACK');
+      await connection.rollback();
       throw err;
+    } finally {
+      connection.release();
     }
   } catch (error) {
     next(error);

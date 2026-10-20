@@ -12,6 +12,7 @@ async function request(method, path, body = null, fallbackData = null) {
     return res.data;
   } catch (err) {
     if (fallbackData !== null) {
+      console.warn(`[Trainer Service Fallback] ${method} ${path} failed (${err.message}). Using local mock fallback.`);
       return fallbackData;
     }
     throw err;

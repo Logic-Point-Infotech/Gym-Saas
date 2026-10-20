@@ -39,11 +39,12 @@ const logWorkout = async (req, res, next) => {
   const { plan_id, day_id, logged_date, duration_minutes, notes, set_logs } = req.body;
   const userId = req.user.id;
 
+  const connection = await db.getConnection();
   try {
-    await db.query('START TRANSACTION');
+    await connection.beginTransaction();
 
     try {
-      const [result] = await db.query(
+      const [result] = await connection.query(
         'INSERT INTO workout_logs (client_id, plan_id, day_id, logged_date, duration_minutes, notes) VALUES (?, ?, ?, ?, ?, ?)',
         [userId, plan_id, day_id, logged_date, duration_minutes, notes]
       );
@@ -52,7 +53,7 @@ const logWorkout = async (req, res, next) => {
       if (Array.isArray(set_logs) && set_logs.length > 0) {
         await Promise.all(
           set_logs.map((set) =>
-            db.query(
+            connection.query(
               'INSERT INTO workout_set_logs (workout_log_id, exercise_id, set_number, reps_done, weight_kg, is_completed) VALUES (?, ?, ?, ?, ?, ?)',
               [logId, set.exercise_id, set.set_number, set.reps_done, set.weight_kg, set.is_completed]
             )
@@ -60,11 +61,13 @@ const logWorkout = async (req, res, next) => {
         );
       }
 
-      await db.query('COMMIT');
+      await connection.commit();
       res.status(201).json({ id: logId, message: 'Workout logged successfully' });
     } catch (err) {
-      await db.query('ROLLBACK');
+      await connection.rollback();
       throw err;
+    } finally {
+      connection.release();
     }
   } catch (error) {
     next(error);

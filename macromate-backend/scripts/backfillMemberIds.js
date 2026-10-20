@@ -8,7 +8,7 @@ const backfill = async () => {
     await connection.beginTransaction();
 
     const [clients] = await connection.query(
-      'SELECT id, name FROM users WHERE role = "client" AND member_id IS NULL ORDER BY id ASC'
+      "SELECT id, name FROM users WHERE role = 'client' AND member_id IS NULL ORDER BY id ASC"
     );
 
     console.log(`Found ${clients.length} clients to backfill.`);

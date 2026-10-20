@@ -36,18 +36,19 @@ const logMeal = async (req, res, next) => {
   const userId = req.user.id;
   const today = new Date().toISOString().split('T')[0];
 
+  const connection = await db.getConnection();
   try {
-    await db.query('START TRANSACTION');
+    await connection.beginTransaction();
 
     try {
-      let [logs] = await db.query(
+      let [logs] = await connection.query(
         'SELECT id FROM daily_nutrition_logs WHERE client_id = ? AND log_date = ?',
         [userId, today]
       );
 
       let logId;
       if (logs.length === 0) {
-        const [result] = await db.query(
+        const [result] = await connection.query(
           'INSERT INTO daily_nutrition_logs (client_id, log_date, total_calories, total_protein, total_carbs, total_fat) VALUES (?, ?, 0, 0, 0, 0)',
           [userId, today]
         );
@@ -56,21 +57,23 @@ const logMeal = async (req, res, next) => {
         logId = logs[0].id;
       }
 
-      const [mealResult] = await db.query(
+      const [mealResult] = await connection.query(
         'INSERT INTO meal_entries (log_id, meal_type, detected_foods, total_calories, total_protein, total_carbs, total_fat, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
         [logId, meal_type, JSON.stringify(detected_foods), total_calories, total_protein, total_carbs, total_fat, image_url]
       );
 
-      await db.query(
+      await connection.query(
         'UPDATE daily_nutrition_logs SET total_calories = total_calories + ?, total_protein = total_protein + ?, total_carbs = total_carbs + ?, total_fat = total_fat + ? WHERE id = ?',
         [total_calories, total_protein, total_carbs, total_fat, logId]
       );
 
-      await db.query('COMMIT');
+      await connection.commit();
       res.status(201).json({ id: mealResult.insertId, message: 'Meal logged successfully' });
     } catch (err) {
-      await db.query('ROLLBACK');
+      await connection.rollback();
       throw err;
+    } finally {
+      connection.release();
     }
   } catch (error) {
     next(error);

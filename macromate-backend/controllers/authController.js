@@ -5,7 +5,8 @@ const db = require('../config/db');
 const { generateMemberId } = require('../utils/memberIdGenerator');
 
 const generateToken = (id, name, email, role, member_id) => {
-  return jwt.sign({ id, name, email, role, member_id }, process.env.JWT_SECRET, {
+  const secret = process.env.JWT_SECRET || 'macromate_super_secret_key_123';
+  return jwt.sign({ id, name, email, role, member_id }, secret, {
     expiresIn: '7d',
   });
 };
