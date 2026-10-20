@@ -1,12 +1,8 @@
 // src/api/client.js
-import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../utils/helpers';
 
-const client = axios.create({
-  baseURL: 'https://gym-saas-j0f7.onrender.com/api',
-  timeout: 25000, // 25s timeout handles Render free-tier cold starts
-});
+const BASE_URL = 'https://gym-saas-j0f7.onrender.com/api';
 
 let onUnauthorizedCallback = null;
 
@@ -14,36 +10,70 @@ export const setOnUnauthorized = (cb) => {
   onUnauthorizedCallback = cb;
 };
 
-// Request Interceptor: Attach Token
-client.interceptors.request.use(
-  async (config) => {
-    const token = await AsyncStorage.getItem(STORAGE_KEYS.TOKEN);
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => Promise.reject(error)
-);
+async function apiRequest(endpoint, method = 'GET', data = null, customHeaders = {}) {
+  const token = await AsyncStorage.getItem(STORAGE_KEYS.TOKEN);
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    ...customHeaders,
+  };
 
-// Response Interceptor: Handle Auth Errors
-client.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response && error.response.status === 401) {
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${cleanEndpoint}`;
+
+  const config = {
+    method,
+    headers,
+  };
+
+  if (data && !(data instanceof FormData)) {
+    config.body = JSON.stringify(data);
+  } else if (data instanceof FormData) {
+    config.body = data;
+    delete headers['Content-Type'];
+  }
+
+  try {
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 25000);
+    config.signal = controller.signal;
+
+    const response = await fetch(url, config);
+    clearTimeout(timeoutId);
+
+    const resData = await response.json().catch(() => ({}));
+
+    if (response.status === 401) {
       await AsyncStorage.multiRemove([STORAGE_KEYS.TOKEN, STORAGE_KEYS.USER]);
       if (onUnauthorizedCallback) {
         onUnauthorizedCallback();
       }
+      throw new Error(resData.message || 'Not authorized, please login again.');
     }
 
-    // Extract readable error message
-    const message = error.response?.data?.message || error.message || 'Something went wrong. Please try again.';
-    const enhancedError = new Error(message);
-    enhancedError.status = error.response?.status;
+    if (!response.ok) {
+      throw new Error(resData.message || `Server Error (${response.status})`);
+    }
 
-    return Promise.reject(enhancedError);
+    return { data: resData, status: response.status };
+  } catch (error) {
+    if (error.name === 'AbortError') {
+      throw new Error('Connection timed out. Please check your internet connection.');
+    }
+    throw error;
   }
-);
+}
+
+const client = {
+  get: (url, config = {}) => apiRequest(url, 'GET', null, config?.headers),
+  post: (url, data, config = {}) => apiRequest(url, 'POST', data, config?.headers),
+  put: (url, data, config = {}) => apiRequest(url, 'PUT', data, config?.headers),
+  delete: (url, config = {}) => apiRequest(url, 'DELETE', null, config?.headers),
+  request: (options) => apiRequest(options.url, options.method, options.data, options.headers),
+};
 
 export default client;
