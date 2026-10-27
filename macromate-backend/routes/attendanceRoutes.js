@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { getAttendance } = require('../controllers/attendanceController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 router.get('/', protect, getAttendance);
 

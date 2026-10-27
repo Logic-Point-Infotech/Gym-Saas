@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { getTodayLog, logMeal, getNutritionHistory } = require('../controllers/nutritionController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 router.get('/log/today', protect, getTodayLog);
 router.post('/meal', protect, logMeal);

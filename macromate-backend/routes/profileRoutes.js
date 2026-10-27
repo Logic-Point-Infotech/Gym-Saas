@@ -2,7 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const { getProfile, updateProfile, getMemberHistory } = require('../controllers/profileController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 router.get('/', protect, getProfile);
 router.put('/', protect, updateProfile);

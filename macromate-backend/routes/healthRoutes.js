@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const { getHealthMetrics, logHealthMetrics, uploadBloodReport } = require('../controllers/healthController');
-const { protect } = require('../middleware/authMiddleware');
+const { protect } = require('../middlewares/authMiddleware');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {

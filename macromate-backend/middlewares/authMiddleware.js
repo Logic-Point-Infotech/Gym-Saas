@@ -1,4 +1,4 @@
-// macromate-backend/middleware/authMiddleware.js
+// macromate-backend/middlewares/authMiddleware.js
 const jwt = require('jsonwebtoken');
 
 const protect = async (req, res, next) => {
