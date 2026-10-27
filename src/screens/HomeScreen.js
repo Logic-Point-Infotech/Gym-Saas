@@ -97,7 +97,13 @@ const HomeScreen = ({ navigation }) => {
       <View style={styles.header}>
         <View>
           <Text style={[styles.greeting, { color: theme.textSecondary }]}>Namaste,</Text>
-          <Text style={[styles.name, { color: theme.heading }]}>{user?.name || 'Athlete'}</Text>
+          <Text style={[styles.name, { color: theme.heading }]}>{data.profile?.name || user?.name || 'Athlete'}</Text>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 4 }}>
+            <View style={{ width: 8, height: 8, borderRadius: 4, backgroundColor: '#4CAF50' }} />
+            <Text style={{ fontSize: 11, color: '#4CAF50', fontWeight: 'bold' }}>
+              Render Live ({data.profile?.member_id || 'Connected'})
+            </Text>
+          </View>
         </View>
         <TouchableOpacity onPress={() => navigation.navigate('Notifications')}>
           <Icon name="bell-outline" size={28} color={theme.heading} />

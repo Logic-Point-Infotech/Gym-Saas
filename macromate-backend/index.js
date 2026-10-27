@@ -20,14 +20,16 @@ app.use((req, res, next) => {
 app.use(cors());
 app.use(express.json());
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, 'uploads', 'blood_reports');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
+// Ensure uploads directory exists (safely for serverless environments)
+try {
+  const uploadDir = path.join('/tmp', 'blood_reports');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+  app.use('/uploads', express.static(uploadDir));
+} catch (e) {
+  console.log('Upload directory warning:', e.message);
 }
-
-// Static Files
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Root Route Welcome Handler
 app.get('/', (req, res) => {
@@ -80,8 +82,12 @@ app.use((err, req, res, next) => {
   res.status(status).json(response);
 });
 
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-  console.log(`Try accessing: http://192.168.137.1:${PORT}/api/health`);
-});
+// Export app for Vercel Serverless Functions
+module.exports = app;
+
+if (require.main === module) {
+  const PORT = process.env.PORT || 5000;
+  app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
+  });
+}
