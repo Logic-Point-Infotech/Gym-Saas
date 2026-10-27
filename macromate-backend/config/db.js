@@ -6,21 +6,13 @@ dotenv.config();
 
 let poolConfig;
 
-if (process.env.DATABASE_URL) {
-  poolConfig = {
-    connectionString: process.env.DATABASE_URL,
-    ssl: { rejectUnauthorized: false },
-  };
-} else {
-  poolConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 5432,
-    user: process.env.DB_USER || 'postgres',
-    password: process.env.DB_PASSWORD || 'postgres',
-    database: process.env.DB_NAME || 'macromate_db',
-    ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
-  };
-}
+const DEFAULT_DB_URL = 'postgresql://postgres.mdlpeualjuqgltlcsyey:Vyaym@1june2026@aws-0-ap-south-1.pooler.supabase.com:6543/postgres';
+const connectionString = process.env.DATABASE_URL || DEFAULT_DB_URL;
+
+poolConfig = {
+  connectionString,
+  ssl: { rejectUnauthorized: false },
+};
 
 const pool = new Pool(poolConfig);
 
