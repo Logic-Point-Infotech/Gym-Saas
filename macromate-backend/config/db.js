@@ -4,13 +4,12 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-let poolConfig;
+if (!process.env.DATABASE_URL) {
+  console.warn('WARNING: DATABASE_URL environment variable is not set!');
+}
 
-const DEFAULT_DB_URL = 'postgresql://postgres.mdlpeualjuqgltlcsyey:Vyaym@1june2026@aws-0-ap-south-1.pooler.supabase.com:6543/postgres';
-const connectionString = process.env.DATABASE_URL || DEFAULT_DB_URL;
-
-poolConfig = {
-  connectionString,
+const poolConfig = {
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false },
 };
 

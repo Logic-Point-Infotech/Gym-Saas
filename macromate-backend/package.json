@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "build": "node scripts/initDb.js",
+    "build": "echo 'Build complete'",
     "db:init": "node scripts/initDb.js"
   },
   "dependencies": {

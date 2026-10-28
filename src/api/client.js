@@ -2,7 +2,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { STORAGE_KEYS } from '../utils/helpers';
 
-const BASE_URL = 'https://gym-saas.vercel.app/api';
+const BASE_URL = 'https://gym-saas-src.vercel.app/api';
 
 let onUnauthorizedCallback = null;
 

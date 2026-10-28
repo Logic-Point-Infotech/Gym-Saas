@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "build": "npm --prefix macromate-backend install && npm --prefix macromate-backend run build",
-    "start": "npm --prefix macromate-backend start",
+    "build": "echo 'Build complete'",
+    "start": "node macromate-backend/index.js",
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "test": "jest",
