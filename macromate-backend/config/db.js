@@ -4,14 +4,23 @@ const dotenv = require('dotenv');
 
 dotenv.config();
 
-if (!process.env.DATABASE_URL) {
-  console.warn('WARNING: DATABASE_URL environment variable is not set!');
-}
+let poolConfig;
 
-const poolConfig = {
-  connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false },
-};
+if (process.env.DATABASE_URL) {
+  poolConfig = {
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false },
+  };
+} else {
+  poolConfig = {
+    host: process.env.DB_HOST || 'aws-0-ap-south-1.pooler.supabase.com',
+    port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 6543,
+    user: process.env.DB_USER || 'postgres.mdlpeualjuqgltlcsyey',
+    password: process.env.DB_PASSWORD || 'Vyaym@1june2026',
+    database: process.env.DB_NAME || 'postgres',
+    ssl: { rejectUnauthorized: false },
+  };
+}
 
 const pool = new Pool(poolConfig);
 
