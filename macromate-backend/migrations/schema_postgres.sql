@@ -192,3 +192,37 @@ CREATE TABLE IF NOT EXISTS attendance (
     check_in_time TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
     check_out_time TIMESTAMPTZ
 );
+
+-- Automated Health Reports (Automation #1, #2, #4)
+CREATE TABLE IF NOT EXISTS automated_health_reports (
+    id SERIAL PRIMARY KEY,
+    client_id INT REFERENCES users(id) ON DELETE CASCADE,
+    report_date DATE DEFAULT CURRENT_DATE,
+    health_score INT DEFAULT 85,
+    weight_kg DECIMAL(5,2),
+    bmi DECIMAL(5,2),
+    bmr INT,
+    tdee INT,
+    avg_daily_calories INT,
+    avg_daily_protein DECIMAL(5,2),
+    workout_adherence_pct INT,
+    status VARCHAR(50) DEFAULT 'Optimal',
+    summary_text TEXT,
+    insights_json JSONB,
+    recommendations_json JSONB,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Trainer Alerts & Action Items (Automation #5)
+CREATE TABLE IF NOT EXISTS trainer_alerts (
+    id SERIAL PRIMARY KEY,
+    trainer_id INT REFERENCES users(id) ON DELETE CASCADE,
+    client_id INT REFERENCES users(id) ON DELETE CASCADE,
+    alert_type VARCHAR(50),
+    severity VARCHAR(20) DEFAULT 'medium',
+    title VARCHAR(200) NOT NULL,
+    message TEXT NOT NULL,
+    recommended_action VARCHAR(200),
+    is_resolved BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP
+);

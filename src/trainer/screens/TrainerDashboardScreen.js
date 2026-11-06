@@ -69,6 +69,7 @@ export default function TrainerDashboardScreen() {
   const {
     dailyBriefing, briefingLoading, fetchDailyBriefing,
     riskScores, riskLoading, fetchRiskScores,
+    automatedInsights, fetchAutomatedInsights, executeAction,
   } = useAI();
 
   const fetchStats = useCallback(async () => {
@@ -284,6 +285,46 @@ export default function TrainerDashboardScreen() {
             </Text>
           )}
         </View>
+
+        {/* AUTOMATION 5: LIVE PROGRESS ALERTS */}
+        {automatedInsights?.progress_alerts?.length > 0 && (
+          <View style={styles.card}>
+            <View style={styles.cardHeaderRow}>
+              <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                <Ionicons name="flash" size={16} color={colors.accent} />
+                <Text style={styles.cardTitle}>Automated Progress Alerts</Text>
+              </View>
+              <View style={[styles.growthBadge, { backgroundColor: 'rgba(232,232,64,0.15)' }]}>
+                <Text style={[styles.growthBadgeText, { color: colors.accent }]}>
+                  {automatedInsights.progress_alerts.length} Pending
+                </Text>
+              </View>
+            </View>
+            <Text style={styles.cardSubtitle}>Real-time client progress flags requiring attention</Text>
+            {automatedInsights.progress_alerts.slice(0, 3).map((alert) => (
+              <View key={alert.id} style={[styles.insightRow, { borderLeftWidth: 3, borderLeftColor: alert.severity === 'high' ? colors.error : colors.accent, paddingLeft: 10 }]}>
+                <View style={[styles.insightIcon, { backgroundColor: alert.severity === 'high' ? 'rgba(244,67,54,0.15)' : colors.accentDim }]}>
+                  <Ionicons name={alert.icon || 'alert-circle'} size={18} color={alert.severity === 'high' ? colors.error : colors.accent} />
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.insightTitle}>{alert.title}</Text>
+                  <Text style={styles.insightDesc}>{alert.message}</Text>
+                </View>
+                <TouchableOpacity
+                  style={{ backgroundColor: colors.accent, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 8 }}
+                  onPress={async () => {
+                    if (alert.action_payload) {
+                      await executeAction({ client_id: alert.client_id, action_type: alert.action_payload.actionType, payload: alert.action_payload });
+                      showToast(`Executed: ${alert.recommended_action}`);
+                    }
+                  }}
+                >
+                  <Text style={{ fontSize: 10, fontWeight: 'bold', color: colors.onPrimary }}>1-Tap</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+          </View>
+        )}
 
         <View style={styles.card}>
           <View style={styles.cardHeaderRow}>

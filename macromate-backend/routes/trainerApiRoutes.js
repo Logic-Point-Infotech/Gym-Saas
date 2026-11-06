@@ -2,6 +2,12 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/db');
+const {
+  getTrainerAutomatedInsights,
+  getTrainerClientReport,
+  executeTrainerQuickAction,
+} = require('../services/trainerAutomationService');
+const { analyzeHealthProgress } = require('../services/aiHealthAnalysisService');
 
 // Users
 router.get('/users', async (req, res, next) => {
@@ -94,7 +100,7 @@ router.post('/health-metrics', async (req, res, next) => {
     const { client_id, weight_kg, bmi, body_fat } = req.body;
     const [result] = await db.query(
       'INSERT INTO client_health_metrics (client_id, weight_kg, bmi, body_fat_percentage) VALUES (?, ?, ?, ?)',
-      [client_id || 1, weight_kg, bmi || 22.0, body_fat || 18.0]
+      [client_id || 3, weight_kg, bmi || 23.5, body_fat || 18.0]
     );
     res.status(201).json({ id: result.insertId, message: 'Logged health metric' });
   } catch (err) { next(err); }
@@ -113,7 +119,7 @@ router.post('/nutrition', async (req, res, next) => {
     const { client_id, detected_food, calories, protein } = req.body;
     const [result] = await db.query(
       'INSERT INTO daily_nutrition_logs (client_id, log_date, total_calories, total_protein) VALUES (?, CURDATE(), ?, ?)',
-      [client_id || 1, calories || 300, protein || 20]
+      [client_id || 3, calories || 450, protein || 30]
     );
     res.status(201).json({ id: result.insertId, detected_food, calories, protein });
   } catch (err) { next(err); }
@@ -134,64 +140,125 @@ router.get('/workouts', async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
-// AI Endpoints
-router.get('/ai/risk-scores', async (req, res, next) => {
+// ==========================================
+// AUTOMATION 5: AUTOMATED TRAINER INSIGHTS
+// ==========================================
+
+router.get('/trainer/automated-insights', async (req, res, next) => {
   try {
-    const [rows] = await db.query('SELECT id, name FROM users WHERE role = ?', ['client']);
-    const summary = { high: 1, medium: 2, low: Math.max(0, rows.length - 3), total: rows.length };
-    res.json({ summary, data: rows.map(r => ({ id: r.id, name: r.name, risk: 'low' })) });
+    const insights = await getTrainerAutomatedInsights(req.user?.id || 2);
+    res.json(insights);
   } catch (err) { next(err); }
 });
 
+router.get('/ai/trainer-insights', async (req, res, next) => {
+  try {
+    const insights = await getTrainerAutomatedInsights(req.user?.id || 2);
+    res.json(insights);
+  } catch (err) { next(err); }
+});
+
+router.get('/trainer/client-report/:clientId', async (req, res, next) => {
+  try {
+    const dossier = await getTrainerClientReport(req.params.clientId);
+    res.json(dossier);
+  } catch (err) { next(err); }
+});
+
+router.post('/trainer/quick-action', async (req, res, next) => {
+  try {
+    const { client_id, action_type, payload } = req.body;
+    const result = await executeTrainerQuickAction({
+      trainerId: req.user?.id || 2,
+      clientId: client_id,
+      actionType: action_type,
+      payload,
+    });
+    res.json(result);
+  } catch (err) { next(err); }
+});
+
+// Dynamic AI Risk Scores based on live automated data
+router.get('/ai/risk-scores', async (req, res, next) => {
+  try {
+    const insights = await getTrainerAutomatedInsights(req.user?.id || 2);
+    const riskData = insights.client_reports.map(c => {
+      let risk = 'low';
+      if (c.status === 'At Risk') risk = 'high';
+      else if (c.status === 'Plateau' || c.status === 'Needs Review') risk = 'medium';
+      return { id: c.client_id, name: c.name, risk, status: c.status };
+    });
+
+    res.json({
+      summary: {
+        high: insights.overview.at_risk,
+        medium: insights.overview.plateau,
+        low: insights.overview.on_track + insights.overview.milestones,
+        total: insights.overview.total_clients,
+      },
+      data: riskData,
+    });
+  } catch (err) { next(err); }
+});
+
+// Dynamic AI Daily Briefing
 router.post('/ai/daily-briefing', async (req, res, next) => {
-  const trainerName = req.body.trainer_name || 'Coach Uday';
-  res.json({
-    data: {
-      greeting: `Good Morning, ${trainerName}!`,
-      summary: 'All client schedules and nutrition plans are updated for today. 3 client renewals are upcoming.',
-      priorities: [
-        'Review Sarah Chen blood report upload',
-        'Send renewal reminder to Tom Bradley',
-        'Check Marcus Vane recovery score'
-      ],
-      motivational_tip: 'Consistency builds character both inside and outside the gym.',
-      ai_generated: true
-    }
-  });
+  try {
+    const insights = await getTrainerAutomatedInsights(req.user?.id || 2);
+    res.json({
+      data: {
+        greeting: insights.daily_briefing.greeting,
+        summary: insights.daily_briefing.summary,
+        priorities: insights.daily_briefing.priorities,
+        motivational_tip: insights.daily_briefing.motivational_tip,
+        ai_generated: true,
+      },
+    });
+  } catch (err) { next(err); }
 });
 
 router.post('/ai/nutrition-analyze', async (req, res, next) => {
   const { food_description } = req.body;
   res.json({
-    meal_name: food_description || 'Healthy Meal',
+    meal_name: food_description || 'Healthy Plate',
     calories: 450,
     protein: 35,
     carbs: 40,
     fats: 12,
     health_score: 9,
-    tips: ['Great macro distribution! Good protein content.']
+    tips: ['Optimal macronutrient density for lean muscle retention.'],
   });
 });
 
 router.post('/ai/workout-recommend', async (req, res, next) => {
+  const clientId = req.body.client_id || 3;
   res.json({
-    rationale: 'Based on client goal and recovery history, this hyper-targeted plan maximizes muscle hypertrophy.',
+    rationale: 'Hypertrophic hypertrophy progression based on recovery scores and volume adaptation.',
     difficulty: 'Intermediate',
     plan: [
-      { exercise: 'Barbell Squat', sets: 4, reps: 10, rest: '90s', notes: 'Keep core tight' },
-      { exercise: 'Romanian Deadlift', sets: 3, reps: 12, rest: '60s', notes: 'Focus on hamstring stretch' },
-      { exercise: 'Walking Lunges', sets: 3, reps: 15, rest: '45s', notes: 'Bodyweight or light dumbbells' },
-      { exercise: 'Leg Extensions', sets: 3, reps: 15, rest: '45s', notes: 'Squeeze at top' }
-    ]
+      { exercise: 'Barbell Bench Press', sets: 4, reps: 10, rest: '90s', notes: 'Explosive drive on concentric' },
+      { exercise: 'Incline Dumbbell Press', sets: 3, reps: 12, rest: '60s', notes: 'Focus on upper chest stretch' },
+      { exercise: 'Overhead Shoulder Press', sets: 3, reps: 12, rest: '60s', notes: 'Keep core tight' },
+      { exercise: 'Tricep Cable Pushdown', sets: 3, reps: 15, rest: '45s', notes: 'Full lock-out' },
+    ],
   });
 });
 
+// Dynamic AI Health Insights
 router.post('/ai/health-insights', async (req, res, next) => {
-  res.json({
-    narrative: 'Client metrics demonstrate steady weight loss progress with optimal recovery scores.',
-    alerts: [{ type: 'info', message: 'Hydration level optimal' }],
-    recommendations: ['Maintain current calorie deficit', 'Ensure 8h sleep nightly']
-  });
+  try {
+    const clientId = req.body.client_id || 3;
+    const analysis = await analyzeHealthProgress(clientId);
+    res.json({
+      narrative: analysis.narrative_insight,
+      alerts: analysis.identified_changes.map(c => ({
+        type: c.type === 'positive' ? 'info' : 'warning',
+        message: `${c.metric}: ${c.change} (${c.from} -> ${c.to})`,
+      })),
+      recommendations: analysis.prescriptions.map(p => p.detail),
+      full_analysis: analysis,
+    });
+  } catch (err) { next(err); }
 });
 
 module.exports = router;
