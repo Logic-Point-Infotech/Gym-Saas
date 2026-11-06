@@ -1,4 +1,4 @@
-# MacroMate: AI Fitness & Nutrition Ecosystem
+# VyayamAI: AI Fitness & Nutrition Ecosystem
 
 A professional-grade fitness platform consisting of a React Native Android App and a Node.js Express/MySQL Backend.
 
@@ -11,7 +11,7 @@ A professional-grade fitness platform consisting of a React Native Android App a
 
 ---
 
-## 🛠️ Backend Setup (macromate-backend)
+## 🛠️ Backend Setup (VyayamAI-backend)
 
 ### Prerequisites
 - Node.js v18+
@@ -21,7 +21,7 @@ A professional-grade fitness platform consisting of a React Native Android App a
 ### Installation
 1.  **Clone and Install**:
     ```bash
-    cd macromate-backend
+    cd VyayamAI-backend
     npm install
     ```
 2.  **Environment Config**:
@@ -31,7 +31,7 @@ A professional-grade fitness platform consisting of a React Native Android App a
     DB_HOST=localhost
     DB_USER=root
     DB_PASSWORD=your_password
-    DB_NAME=macromate_db
+    DB_NAME=VyayamAI_db
     JWT_SECRET=your_secret
     NODE_ENV=development
     ```
@@ -45,7 +45,7 @@ A professional-grade fitness platform consisting of a React Native Android App a
 
 ---
 
-## 📱 App Setup (MacroMateClientApp)
+## 📱 App Setup (VyayamAIClientApp)
 
 ### Run instructions
 1.  **Start Metro**:
@@ -63,7 +63,7 @@ A professional-grade fitness platform consisting of a React Native Android App a
     ```
 
 ### Test Credentials
-- **Email**: `client@macromate.com`
+- **Email**: `client@VyayamAI.com`
 - **Password**: `Client123`
 
 ---

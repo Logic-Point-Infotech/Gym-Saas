@@ -12,7 +12,7 @@ const RoleSelectionScreen = () => {
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text style={[styles.title, { color: theme.primary }]}>MacroMate</Text>
+          <Text style={[styles.title, { color: theme.primary }]}>VyayamAI</Text>
           <Text style={[styles.subtitle, { color: theme.textSecondary }]}>
             Select your portal to proceed
           </Text>

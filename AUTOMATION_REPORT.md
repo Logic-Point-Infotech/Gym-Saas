@@ -1,13 +1,13 @@
-# MacroMate Automation Implementation Report
+# VyayamAI Automation Implementation Report
 
 ## Executive Summary
-This document details the complete implementation of the 5 core automations for the **MacroMate Gym-SaaS Ecosystem**. The overarching architectural goal is to **minimize manual data entry for clients** while giving trainers **automatically compiled health reports, progress alerts, and actionable insights** through their dashboard.
+This document details the complete implementation of the 5 core automations for the **VyayamAI Gym-SaaS Ecosystem**. The overarching architectural goal is to **minimize manual data entry for clients** while giving trainers **automatically compiled health reports, progress alerts, and actionable insights** through their dashboard.
 
 ---
 
 ## 1. Automated Health Reports
 * **Core Problem Solved:** Clients previously had to manually enter biometrics, calculate nutritional averages, and review workouts to compile health status.
-* **Backend Engine:** `macromate-backend/services/automatedHealthReportService.js`
+* **Backend Engine:** `VyayamAI-backend/services/automatedHealthReportService.js`
   * Aggregates `client_health_metrics`, `daily_nutrition_logs`, `meal_entries`, and `workout_logs` over the past 30 days.
   * **Automated Calculations:**
     * Basal Metabolic Rate (BMR) via Mifflin-St Jeor equation: $BMR = 10W + 6.25H - 5A + s$
@@ -28,7 +28,7 @@ This document details the complete implementation of the 5 core automations for 
 
 ## 2. AI Health Analysis
 * **Core Problem Solved:** Manual record-by-record analysis to identify progress or health plateaus.
-* **Backend Engine:** `macromate-backend/services/aiHealthAnalysisService.js`
+* **Backend Engine:** `VyayamAI-backend/services/aiHealthAnalysisService.js`
   * Automatically calculates **Weight Velocity** ($\Delta W / \text{week}$) and categorizes trajectory:
     * *Optimal Fat Loss* ($-0.4$ to $-0.9\text{ kg/week}$)
     * *Metabolic Plateau* ($|\Delta W| < 0.2\text{ kg}$ over 14+ days despite active calorie deficit)
@@ -48,7 +48,7 @@ This document details the complete implementation of the 5 core automations for 
 
 ## 3. Automated Nutrition Tracking
 * **Core Problem Solved:** Traditional calorie counting requires tedious manual text search and portion weighting.
-* **Backend Engine:** `macromate-backend/services/nutritionVisionService.js`
+* **Backend Engine:** `VyayamAI-backend/services/nutritionVisionService.js`
   * Automatically detects meal type based on local time of day (Breakfast: 5–11h, Lunch: 11–16h, Snack: 16–19h, Dinner: 19–5h).
   * Computer vision & multi-dish recognition pipeline with portion estimation across 100+ fitness and Indian meals.
   * Calculates Calories, Protein (g), Carbs (g), Fat (g), and Fiber (g).
@@ -63,7 +63,7 @@ This document details the complete implementation of the 5 core automations for 
 
 ## 4. Progress Monitoring
 * **Core Problem Solved:** Disconnected numbers without historical trends or goal arrival projections.
-* **Backend Engine:** `macromate-backend/services/progressMonitoringService.js`
+* **Backend Engine:** `VyayamAI-backend/services/progressMonitoringService.js`
   * Builds formatted time-series data for Weight, BMI, Body Fat %, and Calorie compliance.
   * Calculates Net Weight Delta (kg and %), Weekly Rate of Change, and Projected Goal ETA in weeks.
   * Generates an Auto-Generated Narrative Progress Summary synthesizing 30-day journey.
@@ -77,7 +77,7 @@ This document details the complete implementation of the 5 core automations for 
 
 ## 5. Automated Trainer Insights
 * **Core Problem Solved:** Trainers previously had to open and read individual daily logs for every client.
-* **Backend Engine:** `macromate-backend/services/trainerAutomationService.js`
+* **Backend Engine:** `VyayamAI-backend/services/trainerAutomationService.js`
   * Automatically scans all clients across workouts, nutrition, and biometrics.
   * **Automated Progress Alerts:**
     * 🔴 *High Risk Dropout*: Client has $\le 1$ session logged this week.
@@ -102,7 +102,7 @@ This document details the complete implementation of the 5 core automations for 
 ---
 
 ## Verification Results
-All 5 automated services were validated with the built-in test runner (`macromate-backend/scripts/testAutomations.js`):
+All 5 automated services were validated with the built-in test runner (`VyayamAI-backend/scripts/testAutomations.js`):
 * `[TEST 1] Automated Health Reports`: **PASS** (Health Score: 73, BMR: 1701 kcal, TDEE: 2637 kcal, Narrative generated).
 * `[TEST 2] AI Health Analysis`: **PASS** (Velocity: -0.6 kg/wk, 4 metric changes identified, Trajectory classified).
 * `[TEST 3] Automated Nutrition Tracking`: **PASS** (Dishes recognized, Calories: 565 kcal, Macros calculated, Auto-logged).

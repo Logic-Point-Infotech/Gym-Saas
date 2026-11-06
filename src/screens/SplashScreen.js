@@ -7,9 +7,9 @@ const SplashScreen = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={[styles.logoBox, { borderColor: theme.primary }]}>
-        <Text style={[styles.logoText, { color: theme.primary }]}>M</Text>
+        <Text style={[styles.logoText, { color: theme.primary }]}>V</Text>
       </View>
-      <Text style={[styles.title, { color: theme.heading }]}>MacroMate</Text>
+      <Text style={[styles.title, { color: theme.heading }]}>VyayamAI</Text>
       <Text style={[styles.subtitle, { color: theme.textSecondary }]}>Precision AI Fitness</Text>
       <ActivityIndicator size="large" color={theme.primary} style={styles.loader} />
     </View>

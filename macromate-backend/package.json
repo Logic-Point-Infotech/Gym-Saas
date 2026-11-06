@@ -1,7 +1,7 @@
 {
-  "name": "macromate-backend",
+  "name": "vyayamai-backend",
   "version": "1.0.0",
-  "description": "MacroMate Backend API (PostgreSQL / Supabase)",
+  "description": "VyayamAI Backend API (PostgreSQL / Supabase)",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",

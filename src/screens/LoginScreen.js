@@ -55,7 +55,7 @@ const LoginScreen = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
-        <Text style={[styles.header, { color: theme.primary }]}>MacroMate</Text>
+        <Text style={[styles.header, { color: theme.primary }]}>VyayamAI</Text>
         <Text style={[styles.subHeader, { color: theme.textSecondary }]}>Login to your fitness hub</Text>
 
         <View style={styles.form}>

@@ -11,7 +11,7 @@ const {
 
 async function runAutomationTests() {
   console.log('====================================================');
-  console.log('🧪 RUNNING GYM SAAS AUTOMATION TEST SUITE');
+  console.log('🧪 RUNNING VYAYAMAI AUTOMATION TEST SUITE');
   console.log('====================================================\n');
 
   let passed = 0;
