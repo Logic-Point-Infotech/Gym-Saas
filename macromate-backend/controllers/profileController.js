@@ -8,10 +8,13 @@ const getProfile = async (req, res, next) => {
       SELECT u.id, u.name, u.email, u.phone, u.profile_photo_url, u.member_id,
              cp.age, cp.gender, cp.height_cm, cp.weight_kg, cp.bmi,
              cp.fitness_goal, cp.dietary_preference, cp.activity_level, cp.daily_calorie_target,
-             m.status as membership_status
+             m.status as membership_status,
+             t.name as trainer_name, t.email as trainer_email
       FROM users u
       LEFT JOIN client_profiles cp ON u.id = cp.client_id
       LEFT JOIN memberships m ON u.id = m.client_id
+      LEFT JOIN trainer_allocations ta ON u.id = ta.client_id
+      LEFT JOIN users t ON ta.trainer_id = t.id
       WHERE u.id = ?
       ORDER BY m.end_date DESC NULLS LAST, u.id DESC LIMIT 1
     `;

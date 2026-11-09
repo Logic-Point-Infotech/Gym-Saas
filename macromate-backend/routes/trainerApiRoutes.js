@@ -7,10 +7,15 @@ const db = require('../config/db');
 router.get('/users', async (req, res, next) => {
   try {
     const role = req.query.role;
-    let query = 'SELECT id, name, email, role, member_id, created_at FROM users';
+    let query = `
+      SELECT u.id, u.name, u.email, u.role, u.member_id, u.created_at,
+             cp.weight_kg, cp.height_cm, cp.bmi, cp.fitness_goal
+      FROM users u
+      LEFT JOIN client_profiles cp ON u.id = cp.client_id
+    `;
     let params = [];
     if (role) {
-      query += ' WHERE role = ?';
+      query += ' WHERE u.role = ?';
       params.push(role);
     }
     const [rows] = await db.query(query, params);
@@ -40,10 +45,10 @@ router.delete('/users/:id', async (req, res, next) => {
 router.get('/memberships', async (req, res, next) => {
   try {
     const status = req.query.status;
-    let query = 'SELECT * FROM memberships';
+    let query = 'SELECT m.*, u.name as client_name, u.member_id FROM memberships m JOIN users u ON m.client_id = u.id';
     let params = [];
     if (status) {
-      query += ' WHERE status = ?';
+      query += ' WHERE m.status = ?';
       params.push(status);
     }
     const [rows] = await db.query(query, params);
@@ -76,7 +81,13 @@ router.put('/memberships/:id', async (req, res, next) => {
 // Trainer Allocations
 router.get('/allocations', async (req, res, next) => {
   try {
-    const [rows] = await db.query('SELECT * FROM trainer_allocations');
+    const [rows] = await db.query(`
+      SELECT ta.*, u_client.name as client_name, u_client.member_id as client_member_id,
+             u_trainer.name as trainer_name
+      FROM trainer_allocations ta
+      JOIN users u_client ON ta.client_id = u_client.id
+      JOIN users u_trainer ON ta.trainer_id = u_trainer.id
+    `);
     res.json({ count: rows.length, data: rows });
   } catch (err) { next(err); }
 });
@@ -84,7 +95,12 @@ router.get('/allocations', async (req, res, next) => {
 // Health Metrics
 router.get('/health-metrics', async (req, res, next) => {
   try {
-    const [rows] = await db.query('SELECT * FROM client_health_metrics ORDER BY recorded_at DESC');
+    const [rows] = await db.query(`
+      SELECT hm.*, u.name as client_name, u.email as client_email, u.member_id
+      FROM client_health_metrics hm
+      JOIN users u ON hm.client_id = u.id
+      ORDER BY hm.recorded_at DESC
+    `);
     res.json({ count: rows.length, data: rows });
   } catch (err) { next(err); }
 });
@@ -103,7 +119,12 @@ router.post('/health-metrics', async (req, res, next) => {
 // Nutrition
 router.get('/nutrition', async (req, res, next) => {
   try {
-    const [rows] = await db.query('SELECT * FROM daily_nutrition_logs ORDER BY log_date DESC');
+    const [rows] = await db.query(`
+      SELECT nl.*, u.name as client_name, u.email as client_email, u.member_id
+      FROM daily_nutrition_logs nl
+      JOIN users u ON nl.client_id = u.id
+      ORDER BY nl.log_date DESC
+    `);
     res.json({ count: rows.length, data: rows });
   } catch (err) { next(err); }
 });
